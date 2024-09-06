@@ -1,0 +1,59 @@
+
+                int [] face = object.rface[i];
+                float xn=object.x;
+                float yn=object.y;
+                float zn=object.z;
+                float[] g = {(float)object.rvert[face[0]-1][0]+xn,(float)object.rvert[face[0]-1][1]+yn,(float)object.rvert[face[0]-1][2]+zn};
+            
+                float[] hh = {(float)object.rvert[face[1]-1][0]+xn,(float)object.rvert[face[1]-1][1]+yn,(float)object.rvert[face[1]-1][2]+zn};
+            
+                float[] f = {(float)object.rvert[face[2]-1][0]+xn,(float)object.rvert[face[2]-1][1]+yn,(float)object.rvert[face[2]-1][2]+zn};
+
+                float[][] poly={g,hh,f};
+            
+                //int[][] a = obj.rface;
+
+                int[][] solved = math.solvePoly(poly,80,x4,y4,z4);
+
+            
+                //float[] buffer = new float[w*h];
+
+                int hi[][] = math.bb(solved,0,1,1);
+
+                int minx=hi[0][0];
+                int miny=hi[1][0];
+                int maxx=hi[0][1];
+                int maxy=hi[1][1];
+                minx=math.clamp(minx,0,(w-1));
+                miny=math.clamp(miny,0,(h-1));
+                maxx=math.clamp(maxx,0,(w-1));
+                maxy=math.clamp(maxy,0,(h-1));
+                
+
+                    
+                    for ( int rc = miny; rc <maxy; rc++ ) {
+                      for ( int cc = minx; cc < maxx; cc++ ) {
+                        // Set the pixel colour of the image n.b. x = cc, y = rc
+                        if(math.isInside(solved[0][0],solved[0][1],solved[1][0],solved[1][1],solved[2][0],solved[2][1],cc,rc)){
+                            comp.img.setRGB(cc, rc, Color.BLACK.getRGB() );
+                        }
+                        
+                        }
+        
+                    }
+                    
+                    
+                Color randomColor = new Color(255,0,0);
+                //System.out.print(Arrays.toString(solved[0]));
+
+                    int x1 =(int)solved[0][0];
+                    int y1=(int)solved[0][1];
+                    int x2=(int)solved[1][0];
+                    int y2=(int)solved[1][1];
+                    int x3=(int)solved[2][0];
+                    int y3=(int)solved[2][1];
+                
+                
+                    comp.addLine(x1, y1, x2, y2, randomColor);
+                    comp.addLine(x2, y2, x3, y3, randomColor);
+                    comp.addLine(x3, y3, x1, y1, randomColor);
