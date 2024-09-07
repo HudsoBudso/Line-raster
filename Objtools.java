@@ -1,9 +1,8 @@
 
 import java.io.File; // Import the File class
 import java.io.FileNotFoundException; // Import this class to handle errors
-import java.util.Scanner; // Import the Scanner class to read text files
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Arrays; // Import the Scanner class to read text files
+import java.util.Scanner;
 
 /**
  * Write a description of class Objtools here.
@@ -16,7 +15,7 @@ public class Objtools {
     /**
      * Constructor for objects of class Objtools
      */
-    private String file;
+    final private String file;
     // teapot.txt
     public int[][] rface;
     public double[][] rvert;

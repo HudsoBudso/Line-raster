@@ -207,8 +207,8 @@ public class Main extends JComponent{
         long load1= System.nanoTime();
         
         //Objtools obj = new Objtools("objects/building.txt",0,0,0,1,1,1);
-        //Objtools obj = new Objtools("teptex.txt",0,0,0,1,1,1);
-        Objtools obj = new Objtools("testing.txt",0,0,0,1,1,1);
+        Objtools obj = new Objtools("teptex.txt",0,0,0,1,1,1);
+        //Objtools obj = new Objtools("testing.txt",0,0,0,1,1,1);
         //Objtools obj2 = new Objtools("testing.txt",10,0,0,1,1,1);
         //Objtools obj2 = new Objtools("test.txt",-45,-45,25,20,50,20);
         //Objtools obj3 = new Objtools("test.txt",-140,-45,40,20,50,20);
@@ -393,7 +393,12 @@ public class Main extends JComponent{
  
  
         int rot = 0;
-        float[] lightv={0,-1,0};
+        //topdown
+        //float[] lightv={0,1,0};
+
+        //side angle
+        float[] lightv={.5f,.5f,-.5f};
+        
     while (true){
 
         
@@ -432,7 +437,15 @@ public class Main extends JComponent{
                 //float[][] polyr = math.rotateobj(poly,rot,0);
                 int[][] solved = math.solvePoly(poly,80,x4,y4,z4,0);
                 float[] norm= math.makenormal(poly);
-
+                
+                float doted = Math.max(0,math.dotprod(norm,lightv));
+                
+                //do color change
+                float red,green,blue;
+                red = object.rmat[i][0]*doted;
+                green = object.rmat[i][1]*doted;
+                blue = object.rmat[i][2]*doted;
+                Color tricolor = new Color((int)red,(int)green,(int)blue);
                 
 
                 float tridist = math.distance(poly, 20,x4,y4,z4,0);
@@ -473,7 +486,7 @@ public class Main extends JComponent{
                           
                           if(abp>=0 && bcp>=0 && cap>=0){
                               if (tridist < buffer[cc][rc]) { 
-                                Color tricolor = new Color(object.rmat[i][0],object.rmat[i][1],object.rmat[i][2]);
+                                //Color tricolor = new Color(object.rmat[i][0],object.rmat[i][1],object.rmat[i][2]);
                                 buffer[cc][rc] = tridist;
                                 comp.img2.setRGB(cc, rc, tricolor.getRGB() );
                             } 

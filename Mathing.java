@@ -1,8 +1,5 @@
 
 
-import java.lang.Math; 
-import java.util.Arrays;
-
 /**
  * Write a description of class Mathing here.
  *
@@ -13,10 +10,6 @@ public class Mathing
 {
     // instance variables - replace the example below with your own
     public int dorender=1;
-    private int fov;
-    private int near;
-    private int far;
-    private float planes;
     private float[][] persmat;
     
     
@@ -35,11 +28,7 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
     public Mathing(int fov,int near,int far)
     {
         
-        // initialise instance variables
-        this.fov=fov;
-        this.near=near;
-        this.far=far;
-        this.planes=(10/(far-near));
+        // initialise instance variablea
         
         float s = (1/((float)Math.tan(((float)fov/2)*((float)Math.PI/180))));
         
@@ -89,11 +78,7 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
  
         // Check if all barycentric coordinates
         // are non-negative
-        if (a >= 0 && b >= 0 && c >= 0) {
-          return true;
-        } else {
-          return false;
-        }
+        return a >= 0 && b >= 0 && c >= 0;
     }
     
      public int edge(int[] a, int[] b,int[] c)
@@ -280,7 +265,10 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         return help;
     }
     
-    
+    public float dotprod(float[] a,float[] b){
+        float ad=(a[0]*b[0])+(a[1]*b[1])+(a[2]*b[2]);
+        return ad;
+    }
     
     
     
