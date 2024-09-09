@@ -112,8 +112,8 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
     public int[] solvepoint(float[] point, float scale,float x4, float y4, float z4,float r1){
         float x,y,z;
         x=point[0]+x4;
-        y=point[1]-3+y4;
-        z=point[2]+8+z4;
+        y=point[1]+y4;
+        z=point[2]+z4;
         //prob transform point here
         
         float[] pointmat = {x,y,z,1};
@@ -209,6 +209,65 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         return e;
     }
     
+
+    public int[][] solvePolyLight(float[][] poly, float scale,float r1,float r2){
+        int[] a = solvepointLight(poly[0], scale,r1,r2);
+        if(dorender==0){
+            int[][] e = {{0},{0},{0}};
+            return e;
+        }
+        int[] b = solvepointLight(poly[1], scale,r1,r2);   
+        if(dorender==0){
+            int[][] e = {{0},{0},{0}};
+            return e;
+        }
+        int[] c = solvepointLight(poly[2], scale,r1,r2);
+        if(dorender==0){
+            int[][] e = {{0},{0},{0}};
+            return e;
+        }
+        int[][] e = {a,b,c};
+        return e;
+    }
+
+    public int[] solvepointLight(float[] point, float scale,float r1,float r2){
+        float x,y,z;
+        x=point[0];
+        y=point[1];
+        z=point[2];
+        //prob transform point here
+        
+        float[] pointmat = {x,y,z,1};
+        float[][] orthomat = new float[][] {{1,0,0,0},{0,1,0,0},{0,0,0,0},{0,0,0,0}};
+        
+        //float[][] rotx;
+
+        float[][] roty={{1,0,0,0},{0,(float)Math.cos(r1),(float)-Math.sin(r1),0},{0,(float)Math.sin(r1),(float)Math.cos(r1),0},{0,0,0,1}};
+        
+        float[] inter2 = matmult(roty,pointmat);
+        float[] inter = matmult(orthomat,inter2);
+
+        
+        if(inter[3]<=0){
+            z=0;
+            x=0;
+            y=0;
+            dorender=1;
+        }else{
+            dorender=1;
+            z=0;
+            x=inter[0]*scale;
+            y=inter[1]*-scale;
+        }
+
+        int[] a = {(int)x+300,(int)y+300,(int)z};
+        
+        return a;
+    }
+
+
+
+
     public float distance(float[][] poly,float scale,float x4, float y4, float z4,float r1){
         float a = distance1(poly[0],scale,x4,y4,z4,r1);
         float b = distance1(poly[1],scale,x4,y4,z4,r1);
@@ -233,6 +292,20 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         float z2 =(float)(b*scale);
         return z2;
     }
+
+    public float pointdistance(float[][]poly, float w1,float w2,float w3){
+        float x,y,z;
+        x=(poly[0][0]*w1)+(poly[1][0]*w2)+(poly[2][0]*w3);
+        y=(poly[0][1]*w1)+(poly[1][1]*w2)+(poly[2][1]*w3);
+        z=(poly[0][2]*w1)+(poly[1][2]*w2)+(poly[2][2]*w3);
+
+        float l= (float)Math.sqrt(Math.pow(x,2) + Math.pow(y,2) + Math.pow(z,2));
+
+        return l;
+    }
+
+
+
     
     public float[] makenormal(float[][] points){
         float[] a=points[0];
