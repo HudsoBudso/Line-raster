@@ -97,6 +97,7 @@ public class Objtools {
                 }else if (data.charAt(0) == 'm'){
                     String[] parts = data.split(" ");
                     matfile = parts[1];
+                    System.out.println(matfile);
                     readmtl(matfile);
                 }else if (data.charAt(0) == 'u'){
                     curmat = curmat+1;

@@ -207,7 +207,8 @@ public class Main extends JComponent{
         long load1= System.nanoTime();
         
         //Objtools obj = new Objtools("objects/building.txt",0,0,0,1,1,1);
-        Objtools obj = new Objtools("teptex.txt",0,0,0,1,1,1);
+        Objtools obj = new Objtools("objects/mouse1.txt",0,0,0,1,1,1);
+        //Objtools obj = new Objtools("teptex.txt",0,0,0,1,1,1);
         //Objtools obj = new Objtools("testing.txt",0,0,0,1,1,1);
         //Objtools obj2 = new Objtools("testing.txt",10,0,0,1,1,1);
         //Objtools obj2 = new Objtools("test.txt",-45,-45,25,20,50,20);
@@ -394,10 +395,10 @@ public class Main extends JComponent{
  
         int rot = 0;
         //topdown
-        float[] lightv={0,1,0};
+        //float[] lightv={0,1,0};
 
         //side angle
-        //float[] lightv={.5f,.5f,-.5f};
+        float[] lightv={.5f,.5f,-.5f};
 
     while (true){
 
@@ -422,7 +423,7 @@ public class Main extends JComponent{
     
         for (Objtools object : objlist) {
            
-
+            /* 
             for (int[] face : object.rface) {
                 float xn=object.x;
                 float yn=object.y;
@@ -475,8 +476,10 @@ public class Main extends JComponent{
                                     if(tridist < bufferlight[cc][rc]){
                                         //pixle is in triangle and its depth is less than others
                                         System.out.println("should draw"+cc+rc);
-                                        bufferlight[cc][rc] = tridi;
-                                        comp.img2.setRGB(cc, rc, Color.WHITE.getRGB() );
+                                        bufferlight[cc][rc] = tridist;
+                                        int b1 = math.clamp((int)(.2*tridist), 0, 255);
+                                        Color wow=new Color(b1,b1,b1);
+                                        comp.img2.setRGB(cc, rc, wow.getRGB() );
                                     }
                                 }
                             }
@@ -486,7 +489,7 @@ public class Main extends JComponent{
                     
                 }
             }
-
+            */
 
 
 
@@ -503,9 +506,9 @@ public class Main extends JComponent{
                 float[] f = {(float)object.rvert[face[2]-1][0]+xn,(float)object.rvert[face[2]-1][1]+yn,(float)object.rvert[face[2]-1][2]+zn};
 
                 float[][] poly={g,hh,f};
-                //float[][] polyr = math.rotateobj(poly,rot,0);
-                int[][] solved = math.solvePoly(poly,80,x4,y4,z4,0);
-                float[] norm= math.makenormal(poly);
+                float[][] polyr = math.rotateobj(poly,rot,1);
+                int[][] solved = math.solvePoly(polyr,80,x4,y4,z4,0);
+                float[] norm= math.makenormal(polyr);
                 
                 float doted = Math.max(0,math.dotprod(norm,lightv));
                 
@@ -517,7 +520,7 @@ public class Main extends JComponent{
                 Color tricolor = new Color((int)red,(int)green,(int)blue);
                 
 
-                float tridist = math.distance(poly, 20,x4,y4,z4,0);
+                float tridist = math.distance(polyr, 20,x4,y4,z4,0);
                 
                 if(math.dorender==1){
                     
@@ -560,7 +563,12 @@ public class Main extends JComponent{
                                 //Color tricolor = new Color(object.rmat[i][0],object.rmat[i][1],object.rmat[i][2]);
                                 //buffer[cc][rc] = tridist;
                                 buffer[cc][rc] = tridist;
-                                //comp.img2.setRGB(cc, rc, tricolor.getRGB() );
+                                comp.img2.setRGB(cc, rc, tricolor.getRGB() );
+                                /* 
+                                int b1 = math.clamp((int)(.5*tridist), 0, 255);
+                                Color wow=new Color(b1,b1,b1);
+                                comp.img2.setRGB(cc, rc, wow.getRGB() );
+                                */
                             } 
                           }
                           
@@ -660,7 +668,7 @@ public class Main extends JComponent{
         try {
             // to sleep .2 seconds
             //Thread.sleep(200);
-            Thread.sleep(50);
+            Thread.sleep(1);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             //quit thread

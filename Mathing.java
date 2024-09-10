@@ -176,15 +176,25 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         float z= poly[2];
         
         float[] pointmat = {x,y,z,0};
-        float[][] rotx={{1,0,0,0},{0,(float)Math.cos(Math.toRadians(rot)),-(float)Math.sin(Math.toRadians(rot)),0},{0,(float)Math.sin(Math.toRadians(rot)),(float)Math.cos(Math.toRadians(rot)),0},{0,0,0,0}};
 
-        float[] inter = matmult(rotx,pointmat);
-        x=inter[0];
-        y=inter[1];
-        z=inter[2];
-            float[] ad= {x,y,z};
-            return ad;
-        
+        if(axis==0){
+            float[][] rotx={{1,0,0,0},{0,(float)Math.cos(Math.toRadians(rot)),-(float)Math.sin(Math.toRadians(rot)),0},{0,(float)Math.sin(Math.toRadians(rot)),(float)Math.cos(Math.toRadians(rot)),0},{0,0,0,0}};
+            float[] inter = matmult(rotx,pointmat);
+            x=inter[0];
+            y=inter[1];
+            z=inter[2];
+                float[] ad= {x,y,z};
+                return ad;
+        }else{
+            float[][] rotx={{(float)Math.cos(Math.toRadians(rot)),0,(float)Math.sin(Math.toRadians(rot)),0},{0,1,0,0},{-(float)Math.sin(Math.toRadians(rot)),0,(float)Math.cos(Math.toRadians(rot)),0},{0,0,0,0}};
+            float[] inter = matmult(rotx,pointmat);
+            x=inter[0];
+            y=inter[1];
+            z=inter[2];
+                float[] ad= {x,y,z};
+                return ad;
+        }
+       
     }
 
 
