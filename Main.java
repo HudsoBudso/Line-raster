@@ -35,6 +35,7 @@ public class Main extends JComponent{
     private static volatile boolean dPressed = false;
     private static volatile boolean spPressed = false;
     private static volatile boolean cPressed = false;
+    private static volatile boolean tabPressed = false;
     
     public static boolean isWPressed() {
         synchronized (Main.class) {
@@ -64,6 +65,11 @@ public class Main extends JComponent{
     public static boolean iscPressed() {
         synchronized (Main.class) {
             return cPressed;
+        }
+    }
+    public static boolean isTabPressed() {
+        synchronized (Main.class) {
+            return tabPressed;
         }
     }
 
@@ -208,15 +214,17 @@ public class Main extends JComponent{
         
         //Objtools obj = new Objtools("objects/building.txt",0,0,0,1,1,1);
         Objtools obj = new Objtools("teptex.txt",0,0,0,1,1,1);
+        //Objtools obj2 = new Objtools("testing.txt",0,-2,9,10,20,1);
         //Objtools obj = new Objtools("testing.txt",0,0,0,1,1,1);
         //Objtools obj2 = new Objtools("testing.txt",10,0,0,1,1,1);
         //Objtools obj2 = new Objtools("test.txt",-45,-45,25,20,50,20);
         //Objtools obj3 = new Objtools("test.txt",-140,-45,40,20,50,20);
         
         obj.readFiletex();
-        //obj2.readFile();
+        //obj2.readFiletex();
         //obj3.readFile();
         
+        //Objtools[] objlist={obj,obj2};
         Objtools[] objlist={obj};
 
         long load2 = System.nanoTime();
@@ -265,6 +273,9 @@ public class Main extends JComponent{
                           if (ke.getKeyCode() == KeyEvent.VK_C){
                                 cPressed = true;
                             }
+                            if (ke.getKeyCode() == KeyEvent.VK_TAB){
+                                tabPressed = true;
+                            }
                       break;
 
 
@@ -287,6 +298,9 @@ public class Main extends JComponent{
                             if (ke.getKeyCode() == KeyEvent.VK_C){
                                   cPressed = false;
                               }
+                              if (ke.getKeyCode() == KeyEvent.VK_TAB){
+                                tabPressed = false;
+                            }
                       break;
                   }
                   return false;
@@ -394,10 +408,10 @@ public class Main extends JComponent{
  
         int rot = 0;
         //topdown
-        float[] lightv={0,1,0};
+        //float[] lightv={0,1,0};
 
         //side angle
-        //float[] lightv={.5f,.5f,-.5f};
+        float[] lightv={.5f,.5f,-.5f};
 
     while (true){
 
@@ -422,21 +436,33 @@ public class Main extends JComponent{
     
         for (Objtools object : objlist) {
            
-
-            for (int[] face : object.rface) {
+            
+            for (int i=0;i<object.rface.length;i++){
+                int [] face = object.rface[i];
                 float xn=object.x;
                 float yn=object.y;
-                float zn=object.z;
+                float zn=object.z-8;
                 float[] g = {(float)object.rvert[face[0]-1][0]+xn,(float)object.rvert[face[0]-1][1]+yn,(float)object.rvert[face[0]-1][2]+zn};
             
                 float[] hh = {(float)object.rvert[face[1]-1][0]+xn,(float)object.rvert[face[1]-1][1]+yn,(float)object.rvert[face[1]-1][2]+zn};
             
                 float[] f = {(float)object.rvert[face[2]-1][0]+xn,(float)object.rvert[face[2]-1][1]+yn,(float)object.rvert[face[2]-1][2]+zn};
-
+                
                 float[][] poly={g,hh,f};
                 //float[][] polyr = math.rotateobj(poly,rot,0);
-                int[][] solved = math.solvePolyLight(poly,80,90,0);
+                int[][] solved = math.solvePolyLight(poly,80,0,0);
                 float tridist = math.distance(poly, 20,0,0,0,0);
+
+                float[] norm= math.makenormal(poly);
+                
+                //float doted = Math.max(0,math.dotprod(norm,lightv));
+                float doted = 1;
+                //do color change
+                float red,green,blue;
+                red = object.rmat[i][0]*doted;
+                green = object.rmat[i][1]*doted;
+                blue = object.rmat[i][2]*doted;
+                Color tricolor = new Color((int)red,(int)green,(int)blue);
 
                 if(math.dorender==1){
                     
@@ -456,27 +482,39 @@ public class Main extends JComponent{
                             int[] pa={solved[0][0],solved[0][1]};
                             int[] pb={solved[1][0],solved[1][1]};
                             int[] pc={solved[2][0],solved[2][1]};
-                            int abc = math.edge(pa,pb,pc);
-                            System.out.println("should draw"+cc+rc);
+                            float abc = math.edge(pa,pb,pc);
                             if(abc>0){
                                 int[] point = {cc,rc};
                                 
-                                int abp = math.edge(pa,pb,point);
-                                int bcp = math.edge(pb,pc,point);
-                                int cap = math.edge(pc,pa,point);
+                                float abp = math.edge(pa,pb,point);
+                                float bcp = math.edge(pb,pc,point);
+                                float cap = math.edge(pc,pa,point);
                                 
                                 float wa = bcp/abc;
                                 float wb= cap/abc;
                                 float wc = abp/abc;
-                                float dist = math.pointdistance(poly, wa, wb, wc);
 
+                                float disty= math.pointdistance(poly, wa, wb, wc,20);
                                 if(abp>=0 && bcp>=0 && cap>=0){
                                     //if(tridist < buffer[cc][rc])
+                                    
                                     if(tridist < bufferlight[cc][rc]){
                                         //pixle is in triangle and its depth is less than others
-                                        System.out.println("should draw"+cc+rc);
-                                        bufferlight[cc][rc] = tridi;
-                                        comp.img2.setRGB(cc, rc, Color.WHITE.getRGB() );
+                                        bufferlight[cc][rc] = tridist;
+                                        
+                                        /* 
+                                        if (Main.isTabPressed()) {
+                                        //Color distcolor = new Color(math.clamp((int)(.7*tridist),0,255),math.clamp((int)(.7*tridist),0,255),math.clamp((int)(.7*tridist),0,255));
+                                        Color distcolor = new Color(math.clamp((int)(.7*disty),0,255),math.clamp((int)(.7*disty),0,255),math.clamp((int)(.7*disty),0,255));
+                                        //Color distcolor = new Color((int)((255*wa)),(int)(255*wb),(int)(255*wc));
+                                            comp.img2.setRGB(cc, rc, distcolor.getRGB() );
+                                        }else{
+                                            comp.img2.setRGB(cc, rc, tricolor.getRGB() );
+                                        }
+                                        */
+
+
+                                        
                                     }
                                 }
                             }
@@ -487,10 +525,10 @@ public class Main extends JComponent{
                 }
             }
 
+            
 
 
-
-       for (int i=0;i<object.rface.length;i++){
+        for (int i=0;i<object.rface.length;i++){
            
                 int [] face = object.rface[i];
                 float xn=object.x;
@@ -540,27 +578,35 @@ public class Main extends JComponent{
                             int[] pa={solved[0][0],solved[0][1]};
                           int[] pb={solved[1][0],solved[1][1]};
                           int[] pc={solved[2][0],solved[2][1]};
-                          int abc = math.edge(pa,pb,pc);
+                          float abc = math.edge(pa,pb,pc);
                           
                           if(abc>0){
                           int[] point = {cc,rc};
 
-                          int abp = math.edge(pa,pb,point);
-                          int bcp = math.edge(pb,pc,point);
-                          int cap = math.edge(pc,pa,point);
+                          float abp = math.edge(pa,pb,point);
+                          float bcp = math.edge(pb,pc,point);
+                          float cap = math.edge(pc,pa,point);
                           
                           float wa = bcp/abc;
                           float wb= cap/abc;
                           float wc = abp/abc;
-                          //float dist = math.pointdistance(polyr, wa, wb, wc);
 
+                          float disty= math.pointdistance(poly, wa, wb, wc,20);
                           if(abp>=0 && bcp>=0 && cap>=0){
                             //if(tridist < buffer[cc][rc])
                             if(tridist < buffer[cc][rc]){ 
                                 //Color tricolor = new Color(object.rmat[i][0],object.rmat[i][1],object.rmat[i][2]);
                                 //buffer[cc][rc] = tridist;
-                                buffer[cc][rc] = tridist;
-                                //comp.img2.setRGB(cc, rc, tricolor.getRGB() );
+                                buffer[cc][rc] = tridist+bufferlight[300][300];
+                                
+                                if (Main.isTabPressed()) {
+                                    //Color distcolor = new Color(math.clamp((int)(.7*tridist),0,255),math.clamp((int)(.7*tridist),0,255),math.clamp((int)(.7*tridist),0,255));
+                                    Color distcolor = new Color(math.clamp((int)(2*disty),0,255),math.clamp((int)(2*disty),0,255),math.clamp((int)(2*disty),0,255));
+                                    comp.img2.setRGB(cc, rc, distcolor.getRGB() );
+                                }else{
+                                        comp.img2.setRGB(cc, rc, tricolor.getRGB() );
+                                }
+                                
                             } 
                           }
                           
@@ -660,7 +706,7 @@ public class Main extends JComponent{
         try {
             // to sleep .2 seconds
             //Thread.sleep(200);
-            Thread.sleep(50);
+            Thread.sleep(1);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             //quit thread

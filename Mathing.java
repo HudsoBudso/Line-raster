@@ -81,9 +81,9 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         return a >= 0 && b >= 0 && c >= 0;
     }
     
-     public int edge(int[] a, int[] b,int[] c)
+     public float edge(int[] a, int[] b,int[] c)
     {   
-        int hi=(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
+        float hi=((b[0]-a[0])*(c[1]-a[1]))-((b[1]-a[1])*(c[0]-a[0]));
        return hi;
     }
     
@@ -112,8 +112,8 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
     public int[] solvepoint(float[] point, float scale,float x4, float y4, float z4,float r1){
         float x,y,z;
         x=point[0]+x4;
-        y=point[1]+y4;
-        z=point[2]+z4;
+        y=point[1]-3+y4;
+        z=point[2]+8+z4;
         //prob transform point here
         
         float[] pointmat = {x,y,z,1};
@@ -233,12 +233,12 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
     public int[] solvepointLight(float[] point, float scale,float r1,float r2){
         float x,y,z;
         x=point[0];
-        y=point[1];
-        z=point[2];
+        y=point[1]-3;
+        z=point[2]+8;
         //prob transform point here
         
         float[] pointmat = {x,y,z,1};
-        float[][] orthomat = new float[][] {{1,0,0,0},{0,1,0,0},{0,0,0,0},{0,0,0,0}};
+        float[][] orthomat = new float[][] {{1,0,0,0},{0,1,0,0},{0,0,0,0},{0,0,0,1}};
         
         //float[][] rotx;
 
@@ -246,6 +246,7 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         
         float[] inter2 = matmult(roty,pointmat);
         float[] inter = matmult(orthomat,inter2);
+
 
         
         if(inter[3]<=0){
@@ -293,11 +294,11 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         return z2;
     }
 
-    public float pointdistance(float[][]poly, float w1,float w2,float w3){
+    public float pointdistance(float[][]poly, float w1,float w2,float w3,int s){
         float x,y,z;
-        x=(poly[0][0]*w1)+(poly[1][0]*w2)+(poly[2][0]*w3);
-        y=(poly[0][1]*w1)+(poly[1][1]*w2)+(poly[2][1]*w3);
-        z=(poly[0][2]*w1)+(poly[1][2]*w2)+(poly[2][2]*w3);
+        x=s*(poly[0][0]*w1)+(poly[1][0]*w2)+(poly[2][0]*w3);
+        y=s*(poly[0][1]*w1)+(poly[1][1]*w2)+(poly[2][1]*w3);
+        z=s*(poly[0][2]*w1)+(poly[1][2]*w2)+(poly[2][2]*w3);
 
         float l= (float)Math.sqrt(Math.pow(x,2) + Math.pow(y,2) + Math.pow(z,2));
 
