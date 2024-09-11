@@ -35,6 +35,7 @@ public class Main extends JComponent{
     private static volatile boolean dPressed = false;
     private static volatile boolean spPressed = false;
     private static volatile boolean cPressed = false;
+    private static volatile boolean tabPressed = false;
     
     public static boolean isWPressed() {
         synchronized (Main.class) {
@@ -64,6 +65,11 @@ public class Main extends JComponent{
     public static boolean iscPressed() {
         synchronized (Main.class) {
             return cPressed;
+        }
+    }
+    public static boolean isTabPressed() {
+        synchronized (Main.class) {
+            return tabPressed;
         }
     }
 
@@ -265,6 +271,9 @@ public class Main extends JComponent{
                           if (ke.getKeyCode() == KeyEvent.VK_C){
                                 cPressed = true;
                             }
+                            if (ke.getKeyCode() == KeyEvent.VK_TAB){
+                                tabPressed = true;
+                            }
                       break;
 
 
@@ -287,6 +296,9 @@ public class Main extends JComponent{
                             if (ke.getKeyCode() == KeyEvent.VK_C){
                                   cPressed = false;
                               }
+                              if (ke.getKeyCode() == KeyEvent.VK_TAB){
+                                tabPressed = false;
+                            }
                       break;
                   }
                   return false;
@@ -471,14 +483,14 @@ public class Main extends JComponent{
                             int[] pa={solved[0][0],solved[0][1]};
                           int[] pb={solved[1][0],solved[1][1]};
                           int[] pc={solved[2][0],solved[2][1]};
-                          int abc = math.edge(pa,pb,pc);
+                          float abc = math.edge(pa,pb,pc);
                           
                           if(abc>0){
                           int[] point = {cc,rc};
 
-                          int abp = math.edge(pa,pb,point);
-                          int bcp = math.edge(pb,pc,point);
-                          int cap = math.edge(pc,pa,point);
+                          float abp = math.edge(pa,pb,point);
+                          float bcp = math.edge(pb,pc,point);
+                          float cap = math.edge(pc,pa,point);
                           
                           float wa = bcp/abc;
                           float wb= cap/abc;
@@ -488,7 +500,12 @@ public class Main extends JComponent{
                               if (tridist < buffer[cc][rc]) { 
                                 //Color tricolor = new Color(object.rmat[i][0],object.rmat[i][1],object.rmat[i][2]);
                                 buffer[cc][rc] = tridist;
-                                comp.img2.setRGB(cc, rc, tricolor.getRGB() );
+                                if (Main.isTabPressed()) {
+                                    Color distColor = new Color((int)(.7*tridist),(int)(.7*tridist),(int)(.7*tridist));
+                                    comp.img2.setRGB(cc, rc, distColor.getRGB() );
+                                }else{
+                                    comp.img2.setRGB(cc, rc, tricolor.getRGB() );
+                                }
                             } 
                           }
                           
@@ -588,7 +605,7 @@ public class Main extends JComponent{
         try {
             // to sleep .2 seconds
             //Thread.sleep(200);
-            Thread.sleep(20);
+            Thread.sleep(1);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             //quit thread

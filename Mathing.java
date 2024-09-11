@@ -81,9 +81,9 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         return a >= 0 && b >= 0 && c >= 0;
     }
     
-     public int edge(int[] a, int[] b,int[] c)
+     public float edge(int[] a, int[] b,int[] c)
     {   
-        int hi=(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
+        float hi=(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
        return hi;
     }
     
