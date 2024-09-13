@@ -618,6 +618,7 @@ for (Objtools object : objlist) {
 
 
 
+
                                 float[] pointontri=math.pointfinder(poly,wa,wb,wc);
                                 int[] light = math.solvepointLight(pointontri,80,0,0);
                                 /*
@@ -652,8 +653,15 @@ for (Objtools object : objlist) {
                                 }else{
                                     comp.img2.setRGB(cc, rc, tricolor.getRGB() );
                                 }
-                                   */ 
 
+                                if (Main.isTabPressed()) {
+                                    Color distColor = new Color((int)(.7*tridist),(int)(.7*tridist),(int)(.7*tridist));
+                                    comp.img2.setRGB(cc, rc, distColor.getRGB() );
+                                }else{
+                                    comp.img2.setRGB(cc, rc, tricolor.getRGB() );
+                                }
+                                */ 
+                            } 
                           }
 
                           }
@@ -742,7 +750,8 @@ for (Objtools object : objlist) {
         try {
             // to sleep .2 seconds
             //Thread.sleep(200);
-            Thread.sleep(0);
+
+            Thread.sleep(1);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             //quit thread
