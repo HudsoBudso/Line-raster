@@ -148,11 +148,12 @@ public class Main extends JComponent{
         super.paintComponent(g);
 
         g.drawImage(img, 0, 0, this);
+        /*
         for (Line line : lines) {
             g.setColor(line.color);
             g.drawLine(line.x1, line.y1, line.x2, line.y2);
         }
-
+        */
 
 
         /*
@@ -214,7 +215,8 @@ public class Main extends JComponent{
 
         //Objtools obj = new Objtools("objects/building.txt",0,0,0,1,1,1);
         Objtools obj = new Objtools("teptex.txt",0,0,0,1,1,1);
-        Objtools obj2 = new Objtools("testing.txt",0,-2,9,10,20,1);
+        Objtools obj2 = new Objtools("testing.txt",0,-2,9,10,10,1);
+        Objtools obj3 = new Objtools("testing.txt",0,3,4,1,1,1);
         //Objtools obj = new Objtools("testing.txt",0,0,0,1,1,1);
         //Objtools obj2 = new Objtools("testing.txt",10,0,0,1,1,1);
         //Objtools obj2 = new Objtools("test.txt",-45,-45,25,20,50,20);
@@ -222,9 +224,10 @@ public class Main extends JComponent{
 
         obj.readFiletex();
         obj2.readFiletex();
+        obj3.readFiletex();
         //obj3.readFile();
 
-        Objtools[] objlist={obj,obj2};
+        Objtools[] objlist={obj,obj2,obj3};
         //Objtools[] objlist={obj};
 
         long load2 = System.nanoTime();
@@ -437,9 +440,18 @@ public class Main extends JComponent{
 
 
 
+        Objtools lobject= objlist[0];
+        int[] lface = lobject.rface[0];
+        float lxn=lobject.x;
+        float lyn=lobject.y;
+        float lzn=lobject.z;
+        float[] lpoint = {(float)lobject.rvert[lface[0]-1][0]+lxn,(float)lobject.rvert[lface[0]-1][1]+lyn,(float)lobject.rvert[lface[0]-1][2]+lzn};
+        float lwhy = math.distance1(lpoint,20,x4,y4,z4,0)-math.distance1(lpoint,20,0,0,-1.8f,0);
+
+
         for (Objtools object : objlist) {
 
-            
+
             for (int i=0;i<object.rface.length;i++){
                 int [] face = object.rface[i];
                 float xn=object.x;
@@ -454,7 +466,7 @@ public class Main extends JComponent{
                 float[][] poly={g,hh,f};
                 //float[][] polyr = math.rotateobj(poly,rot,0);
                 int[][] solved = math.solvePolyLight(poly,80,0,0);
-                float tridist = math.distance(poly,20,0,0,0,0);
+                float tridist = lwhy + math.distance(poly,20,0,0,0,0);
 
                 float[] norm= math.makenormal(poly);
 
@@ -518,7 +530,6 @@ public class Main extends JComponent{
                                         */
 
 
-
                                     }
                                 }
                             }
@@ -529,9 +540,12 @@ public class Main extends JComponent{
                 }
             }
 
-            
 
-        
+
+    }
+for (Objtools object : objlist) {
+
+
         for (int i=0;i<object.rface.length;i++){
 
                 int [] face = object.rface[i];
@@ -560,7 +574,6 @@ public class Main extends JComponent{
 
 
                 float tridist = math.distance(poly, 20,x4,y4,z4,0);
-
                 if(math.dorender==1){
 
                     int hi[][] = math.bb(solved,0,1,1);
@@ -598,34 +611,57 @@ public class Main extends JComponent{
                           float disty= math.pointdistance(poly, wa, wb, wc,20,x4,y4,z4);
                           if(abp>=0 && bcp>=0 && cap>=0){
                             //if(tridist < buffer[cc][rc])
-                            if(disty < buffer[cc][rc]){ 
+                            if(tridist < buffer[cc][rc]){ 
                                 //Color tricolor = new Color(object.rmat[i][0],object.rmat[i][1],object.rmat[i][2]);
                                 //buffer[cc][rc] = tridist;
-                                buffer[cc][rc] = disty;
+                                buffer[cc][rc] = tridist;
 
 
 
                                 float[] pointontri=math.pointfinder(poly,wa,wb,wc);
                                 int[] light = math.solvepointLight(pointontri,80,0,0);
+                                /*
                                 int fhgh = math.clamp(light[0],0,599);
                                 int fhgf = math.clamp(light[1],0,599);
-                                float lightdist = bufferlight[fhgh][fhgf];
-                                if(lightdist<disty){
+                                */
+                                int fhgh =light[0];
+                                int fhgf =light[1];
 
-                                comp.img2.setRGB(cc, rc, Color.red.getRGB() );
-                               
-                                
-                            }
-                            else{
-                                comp.img2.setRGB(cc, rc, tricolor.getRGB() );
-                            }
+
+
+                                if((fhgh<600&&fhgh>=0)&&(fhgf<600&&fhgf>=0)&&(math.dorender ==1)){
+                                    float lightdist = bufferlight[fhgh][fhgf];
+                                    if(lightdist<=tridist){
+                                        comp.img2.setRGB(cc, rc, Color.red.getRGB() );
+                                    }else{
+                                        comp.img2.setRGB(cc, rc, tricolor.getRGB() );
+                                    }
+                                }else{
+                                    comp.img2.setRGB(cc, rc, Color.green.getRGB() );
+                                }
+
+
+                                  /*
+                                 if((fhgh<600&&fhgh>=0)&&(fhgf<600&&fhgf>=0)&&(math.dorender ==1)){
+                                    float lightdist = bufferlight[fhgh][fhgf];
+                                    if(lightdist<=tridist){
+                                        comp.img2.setRGB(cc, rc, Color.black.getRGB() );
+                                    }else{
+                                        comp.img2.setRGB(cc, rc, tricolor.getRGB() );
+                                    }
+                                }else{
+                                    comp.img2.setRGB(cc, rc, tricolor.getRGB() );
+                                }
+                                   */ 
+
                           }
+
                           }
-                        
+
                         }
                     }//for rows
                 }
-                
+
                     /*
                     Color randomColor = new Color(255,0,0);
                 //System.out.print(Arrays.toString(solved[0]));
@@ -654,7 +690,6 @@ public class Main extends JComponent{
 
 
     }
-
 
     //Move stuff
         float movespeed=.4f;
@@ -707,7 +742,7 @@ public class Main extends JComponent{
         try {
             // to sleep .2 seconds
             //Thread.sleep(200);
-            Thread.sleep(20);
+            Thread.sleep(0);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             //quit thread

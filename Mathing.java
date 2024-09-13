@@ -136,11 +136,11 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
             dorender=0;
         }else{
             dorender=1;
-            x=(inter[0]/inter[3])*scale;
-            y=(inter[1]/inter[3])*-scale;
+            x=(inter[0]/inter[3]);
+            y=(inter[1]/inter[3]);
         }
 
-        int[] a = {(int)x+300,(int)y+300,(int)z};
+        int[] a = {(int)(x*scale)+300,(int)(y*-scale)+300,(int)z};
 
         return a;
     }
@@ -238,6 +238,8 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
 
         float[] pointmat = {x,y,z,1};
         float[][] orthomat = new float[][] {{1,0,0,0},{0,1,0,0},{0,0,0,0},{0,0,0,1}};
+        //this other one transforms to better screen space
+        //float[][] orthomat = new float[][] {{1/2,0,0,0},{0,1,0,0},{0,0,0,0},{0,0,0,1}};
 
         //float[][] rotx;
 
@@ -252,15 +254,15 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
             z=0;
             x=0;
             y=0;
-            dorender=1;
+            dorender=0;
         }else{
             dorender=1;
             z=0;
-            x=inter[0]*scale;
-            y=inter[1]*-scale;
+            x=inter[0];
+            y=inter[1];
         }
 
-        int[] a = {(int)x+300,(int)y+300,(int)z};
+        int[] a = {(int)(x*scale)+300,(int)(y*-scale)+300,(int)z};
 
         return a;
     }
@@ -298,15 +300,15 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
     public float pointdistance(float[][]poly, float w1,float w2,float w3,int s,float x4,float y4, float z4){
          /*
         float x,y,z;
-        
+
         x=((poly[0][0]+x4)*w1)+((poly[1][0]+x4)*w2)+((poly[2][0]+x4)*w3);
         y=((poly[0][1]+y4)*w1)+((poly[1][1]+y4)*w2)+((poly[2][1]+y4)*w3);
         z=((poly[0][2]+z4)*w1)+((poly[1][2]+z4)*w2)+((poly[2][2]+z4)*w3);
         float l= (float)Math.sqrt(Math.pow(x,2) + Math.pow(y,2) + Math.pow(z,2));
         return l*s;
         */
-        
-        
+
+
         float l1= (float)Math.sqrt(Math.pow(poly[0][0]+x4,2) + Math.pow(poly[0][1]+y4,2) + Math.pow(poly[0][2]+z4,2));
         float l2= (float)Math.sqrt(Math.pow(poly[1][0]+x4,2) + Math.pow(poly[1][1]+y4,2) + Math.pow(poly[1][2]+z4,2));
         float l3= (float)Math.sqrt(Math.pow(poly[2][0]+x4,2) + Math.pow(poly[2][1]+y4,2) + Math.pow(poly[2][2]+z4,2));
@@ -321,16 +323,16 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
     }else{
         return better;
     }
-    
+
 
     }
 
-    
+
     public float[] pointfinder(float[][]poly, float w1,float w2,float w3){
         float x,y,z;
-        x=Math.abs(((poly[0][0])*w1)+((poly[1][0])*w2)+((poly[2][0])*w3));
-        y=Math.abs(((poly[0][1])*w1)+((poly[1][1])*w2)+((poly[2][1])*w3));
-        z=Math.abs(((poly[0][2])*w1)+((poly[1][2])*w2)+((poly[2][2])*w3));
+        x=((poly[0][0])*w1)+((poly[1][0])*w2)+((poly[2][0])*w3);
+        y=((poly[0][1])*w1)+((poly[1][1])*w2)+((poly[2][1])*w3);
+        z=((poly[0][2])*w1)+((poly[1][2])*w2)+((poly[2][2])*w3);
         float[] why = {x,y,z};
         return why;
     }
