@@ -1,41 +1,21 @@
-
-/**
- * Write a description of class Mathing here.
- *
- * @author (your name)
- * @version (a version number or a date)
- */
 public class Mathing
 {
-    // instance variables - replace the example below with your own
+    //basic things declared
     public int dorender=1;
     private float[][] persmat;
 
-
-    /*fov=45
-s=1/(np.tan((fov/2)*(np.pi/180)))
-n=1
-f=20
-planes=-(10/(f-n))
-perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, planes*n, 0]])
-     */
-
-    /**
-     * Constructor for objects of class Mathing
-     */
-
+    //coonstructor
     public Mathing(int fov,int near,int far)
     {
-
-        // initialise instance variablea
 
         float s = (1/((float)Math.tan(((float)fov/2)*((float)Math.PI/180))));
 
         float why = (10/((float)far-near));
-
+        //makes perspective matrix
         this.persmat= new float[][] {{s,0,0,0},{0,s,0,0},{0,0,why,-1},{0,0,why*near,0}};
     }
 
+    //I have no clue what this does
     public double area(int x1, int y1, int x2, int y2,
                                         int x3, int y3)
     {
@@ -43,57 +23,19 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
                                     x3*(y1-y2))/2.0);
     }    
 
-    public boolean isInside(int x1, int y1, int x2,
-                int y2, int x3, int y3, int x, int y)
-    {   
-       /* Calculate area of triangle ABC */
-        double A = area(x1, y1, x2, y2, x3, y3);
-
-       /* Calculate area of triangle PBC */ 
-        double A1 = area(x, y, x2, y2, x3, y3);
-
-       /* Calculate area of triangle PAC */ 
-        double A2 = area(x1, y1, x, y, x3, y3);
-
-       /* Calculate area of triangle PAB */  
-        double A3 = area(x1, y1, x2, y2, x, y);
-
-       /* Check if sum of A1, A2 and A3 is same as A */
-        return (A == A1 + A2 + A3);
-    }
-
-    public boolean isInside2(int x1, int y1, int x2,
-                int y2, int x3, int y3, int x, int y)
-    {   
-       // Calculate the barycentric coordinates
-        // of point P with respect to triangle ABC
-        double denominator = ((y2 - y3) * (x1 - x3) +
-                          (x3- x2) * (y1 - y3));
-        double a = ((y2 - y3) * (x - x3) +
-                (x3 - x2) * (y - y3)) / denominator;
-        double b = ((y3 - y1) * (x - x3) +
-                (x1 - x3) * (y - y3)) / denominator;
-        double c = 1 - a - b;
-
-        // Check if all barycentric coordinates
-        // are non-negative
-        return a >= 0 && b >= 0 && c >= 0;
-    }
-
+    //calculates signed edge thing from rasterization tutorial
      public float edge(int[] a, int[] b,int[] c)
     {   
         float hi=((b[0]-a[0])*(c[1]-a[1]))-((b[1]-a[1])*(c[0]-a[0]));
        return hi;
     }
 
-
-
+    //clamps int value from min to max
     int clamp(int value, int min, int max) {
         return Math.max(min, Math.min(max, value));
     }
 
-
-
+    //calculates Bounding box for a triangle
     public int[][] bb(int[][] triangle, int buff,int w,int h){
 
         int bbminx=Math.min(Math.min(triangle[0][0],triangle[1][0]),triangle[2][0]);
@@ -105,9 +47,7 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         return help;
     }
 
-
-
-
+    //solves point using perspective matrix
     public int[] solvepoint(float[] point, float scale,float x4, float y4, float z4,float r1){
         float x,y,z;
         x=point[0]+x4;
@@ -120,7 +60,6 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         float[][] rotx;
         float[][] roty={{1,0,0,0},{0,Math.cos(),-Math.sin(),0},{0,Math.sin(),Math.cos(),0},{0,0,0,1}};
         */
-
 
         float[] inter = matmult(persmat,pointmat);
 
@@ -145,6 +84,7 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         return a;
     }
 
+    //does matrix multiplication
     public float[] matmult(float[][] one, float[] two){
         float a,b,c,d;
         a=one[0][0]*two[0]+one[0][1]*two[1]+one[0][2]*two[2]+one[0][3]*two[3];
@@ -156,10 +96,7 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
     }
 
 
-
-    //axis 0=x
-    //axis 1=y
-    //axis 2=z
+    //rotate a obj
     public float[][] rotateobj(float[][] poly, int rot, int axis){
         float[] a = rotatepoint(poly[0], rot, axis);   
         float[] b = rotatepoint(poly[1], rot, axis);   
@@ -168,6 +105,7 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         return d;
 
     }
+    //rotate a point
     public float[] rotatepoint (float[] poly, int rot, int axis){
 
         float x= poly[0];
@@ -187,7 +125,7 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
     }
 
 
-
+    //solve a polygon using perspective
     public int[][] solvePoly(float[][] poly, float scale, float x4, float y4, float z4,float r1){
         int[] a = solvepoint(poly[0], scale,x4,y4,z4,r1);
         if(dorender==0){
@@ -208,7 +146,7 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         return e;
     }
 
-
+    //solve polygon for light using orthographic
     public int[][] solvePolyLight(float[][] poly, float scale,float r1,float r2){
         int[] a = solvepointLight(poly[0], scale,r1,r2);
         if(dorender==0){
@@ -228,7 +166,7 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         int[][] e = {a,b,c};
         return e;
     }
-
+    //solve point using ortho matrix
     public int[] solvepointLight(float[] point, float scale,float r1,float r2){
         float x,y,z;
         x=point[0];
@@ -248,8 +186,6 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         float[] inter2 = matmult(roty,pointmat);
         float[] inter = matmult(orthomat,inter2);
 
-
-
         if(inter[3]<=0){
             z=0;
             x=0;
@@ -263,13 +199,10 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         }
 
         int[] a = {(int)(x*scale)+300,(int)(y*-scale)+300,(int)z};
-
         return a;
     }
 
-
-
-
+    //calculates distance to poly
     public float distance(float[][] poly,float scale,float x4, float y4, float z4,float r1){
         float a = distance1(poly[0],scale,x4,y4,z4,r1);
         float b = distance1(poly[1],scale,x4,y4,z4,r1);
@@ -277,7 +210,7 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         float all=(a+b+c)/3;
         return all;
     }
-
+    //calculates distance for a point
     public float distance1(float[] point, float scale,float x4, float y4, float z4,float r1){
         float x,y,z;
         x=point[0]+x4;
@@ -296,7 +229,7 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
     }
 
 
-
+    //solves distance of a point given weights
     public float pointdistance(float[][]poly, float w1,float w2,float w3,int s,float x4,float y4, float z4){
          /*
         float x,y,z;
@@ -327,7 +260,7 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
 
     }
 
-
+    //calculates point using weights
     public float[] pointfinder(float[][]poly, float w1,float w2,float w3){
         float x,y,z;
         x=((poly[0][0])*w1)+((poly[1][0])*w2)+((poly[2][0])*w3);
@@ -337,6 +270,7 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         return why;
     }
 
+    //makes normal for polygon
     public float[] makenormal(float[][] points){
         float[] a=points[0];
         float[] b=points[1];
@@ -346,6 +280,7 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         float[] fin = xprod(ab,ac);
         return fin;
     }
+    //vector subtraction
     public float[] vectorsub(float[] sub,float [] thiss){
         float a1=sub[0]-thiss[0];
         float a2=sub[1]-thiss[1];
@@ -353,6 +288,7 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         float[] a ={a1,a2,a3};
         return a;
     }
+    //cross prouduct
     public float[] xprod(float[] a,float [] b){
         float cx=(a[1]*b[2])-(a[2]*b[1]);
         float cy=(a[2]*b[0])-(a[0]*b[2]);
@@ -367,30 +303,9 @@ perspectivemat=np.array([[s, 0, 0, 0],[0 ,s, 0, 0],[0, 0, planes, -1],[0, 0, pla
         float[] help = {cxn,cyn,czn};
         return help;
     }
-
+    //dotproduct
     public float dotprod(float[] a,float[] b){
         float ad=(a[0]*b[0])+(a[1]*b[1])+(a[2]*b[2]);
         return ad;
     }
-
-
-
-
-
-
-
-
-    /**
-     * An example of a method - replace this comment with your own
-     *
-     * @param  y  a sample parameter for a method
-     * @return    the sum of x and y
-     */
-    /*
-    public int sampleMethod(int y)
-    {
-        // put your code here
-        return x + y;
-    }
-    */
 }

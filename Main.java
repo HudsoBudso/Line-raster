@@ -1,34 +1,19 @@
-import java.awt.*;
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.border.Border;
-
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
-import java.awt.event.KeyEvent;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.LinkedList;
-
-import javax.swing.JButton;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.KeyEvent;
+import java.awt.image.*;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-
-import java.util.Arrays;
-
-import java.awt.image.*;
 
 
 
 public class Main extends JComponent{
 
-
+    //Sets up button press stuff
     private static volatile boolean wPressed = false;
     private static volatile boolean aPressed = false;
     private static volatile boolean sPressed = false;
@@ -36,7 +21,7 @@ public class Main extends JComponent{
     private static volatile boolean spPressed = false;
     private static volatile boolean cPressed = false;
     private static volatile boolean tabPressed = false;
-
+    //Same with this
     public static boolean isWPressed() {
         synchronized (Main.class) {
             return wPressed;
@@ -73,185 +58,75 @@ public class Main extends JComponent{
         }
     }
 
-    private static class Line{
-        final int x1; 
-        final int y1;
-        final int x2;
-        final int y2;
 
-        final Color color;
-
-        public Line(int x1, int y1, int x2, int y2, Color color) {
-            this.x1 = x1;
-            this.y1 = y1;
-            this.x2 = x2;
-            this.y2 = y2;
-            this.color = color;
-        }               
-    }
-
-    private static class Poly{
-        final int x1; 
-        final int y1;
-        final int x2;
-        final int y2;
-        final int x3;
-        final int y3;
-
-        final Color color;
-
-        public Poly(int x1, int y1, int x2, int y2, int x3, int y3, Color color) {
-            this.x1 = x1;
-            this.y1 = y1;
-            this.x2 = x2;
-            this.y2 = y2;
-            this.x3 = x3;
-            this.y3 = y3;
-            this.color = color;
-        }               
-    }
-
-    private final LinkedList<Line> lines = new LinkedList<Line>();
-    private final LinkedList<Poly> polys = new LinkedList<Poly>();
-
-
-    public void addpoly(int x1, int x2, int x3, int x4, int x5, int x6, Color color) {
-        polys.add(new Poly(x1,x2,x3,x4,x5,x6, color));        
-    }
-
-    public void clearpolys() {
-        polys.clear();
-    }
-
-
-
-    public void addLine(int x1, int x2, int x3, int x4) {
-        addLine(x1, x2, x3, x4, Color.black);
-    }
-
-    public void addLine(int x1, int x2, int x3, int x4, Color color) {
-        lines.add(new Line(x1,x2,x3,x4, color));        
-    }
-
-    public void clearLines() {
-        lines.clear();
-    }
+    //repaint method
     public void repa(){
         repaint();
     }
+
+    //Creating Bufferd Images, Img is always desplayed, Img2 is renderd in the backround than it is copied to Img 1
     public BufferedImage img;
     public BufferedImage img2;
 
 
+    //Paint command
     @Override
     protected void paintComponent(Graphics g) {
+        //set up Idk really
         super.paintComponent(g);
-
+        //Displays Img onto screen,pos 0,0
         g.drawImage(img, 0, 0, this);
-        /*
-        for (Line line : lines) {
-            g.setColor(line.color);
-            g.drawLine(line.x1, line.y1, line.x2, line.y2);
-        }
-        */
 
-
-        /*
-        for (Poly poly : polys){
-            int[] ad={poly.x1,poly.x2,poly.x3};
-            int[] bd={poly.y1,poly.y2,poly.y3};
-            g.setColor(Color.black);
-            g.drawPolygon(ad, bd, 3);
-            g.setColor(Color.BLUE);
-            g.fillPolygon(ad, bd, 3);
-        }
-        */
     }
-
-
-    /*
-    private static void createAndShowGUI() {
-        JFrame jFrame = new JFrame("Hello World Swing Example");
-        jFrame.setLayout(new FlowLayout());
-        jFrame.setSize(500, 360);
-        jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        JLabel label = new JLabel("Hello World Swing");
-        Border border = BorderFactory.createLineBorder(Color.BLACK);
-        label.setBorder(border);
-        label.setPreferredSize(new Dimension(150, 100));
-
-        label.setText("Hello World Swing");
-        label.setHorizontalAlignment(JLabel.CENTER);
-        label.setVerticalAlignment(JLabel.CENTER);
-
-        jFrame.add(label);
-        jFrame.setVisible(true);
-    }
-    */
-
-
 
 
 
     public static void main(String[] args) {
-        //createAndShowGUI();
-        //test();
 
+        //Creates new screen
         JFrame testFrame = new JFrame();
+        //Dispose on Close
         testFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        //Makes comp Main object
         final Main comp = new Main();
+        //Sets Screem Size
         comp.setPreferredSize(new Dimension(600, 600));
+        //No Clue
         testFrame.getContentPane().add(comp, BorderLayout.CENTER);
-        //JPanel buttonsPanel = new JPanel();
-        //JButton newLineButton = new JButton("New Line");
-        //JButton clearButton = new JButton("Clear");
-        //buttonsPanel.add(newLineButton);
-        //buttonsPanel.add(clearButton);
 
-        // x y z.   then x y z scale
-
+        //Starts Loading Time
         long load1= System.nanoTime();
 
-        //Objtools obj = new Objtools("objects/building.txt",0,0,0,1,1,1);
+
+        //Creates New Object Objtools(FilePath,intiial x,initial y,initial z, initial x scale,initial y scale,initial z scale,)
+
         Objtools obj = new Objtools("teptex.txt",0,0,0,1,1,1);
         Objtools obj2 = new Objtools("testing.txt",0,-2,9,10,10,1);
         Objtools obj3 = new Objtools("testing.txt",0,3,4,1,1,1);
-        //Objtools obj = new Objtools("testing.txt",0,0,0,1,1,1);
-        //Objtools obj2 = new Objtools("testing.txt",10,0,0,1,1,1);
-        //Objtools obj2 = new Objtools("test.txt",-45,-45,25,20,50,20);
-        //Objtools obj3 = new Objtools("test.txt",-140,-45,40,20,50,20);
 
+        //Reads the texture file and sets up colors, currently you have to do this
         obj.readFiletex();
         obj2.readFiletex();
         obj3.readFiletex();
-        //obj3.readFile();
 
+        //Sets up a list with all objects to be renderd in the sceen.
         Objtools[] objlist={obj,obj2,obj3};
-        //Objtools[] objlist={obj};
 
+        //Finishes loading time and prints time
         long load2 = System.nanoTime();
         long loadtime = load2-load1;
-
         double lseconds = (double)loadtime / 1_000_000_000.0;
         System.out.println("loaded in" + lseconds);
 
-        //testFrame.getContentPane().add(buttonsPanel,BorderLayout.SOUTH);
 
 
 
 
-
+        //Sets up mathing object with All the uesfull math functions, is initialised as (Fov,Near Plane, Far plane)
         Mathing math = new Mathing(45,1,30);
-        //float easy[][][]={{{1,3,3},{4,0,3},{1,0,3}},{{1,3,3},{1,0,3},{1,0,6}}};
-          float easy[][][]={{{1,0,3},{1,0,6},{1,3,6}},{{1,0,3},{1,3,3},{1,3,6}},{{1,0,3},{1,0,6},{4,0,6}},{{1,0,3},{4,0,3},{4,0,6}},{{4,3,3},{4,0,3},{4,0,6}},{{4,3,3},{4,3,6},{4,0,6}},{{4,3,3},{4,3,6},{1,3,3}},{{1,3,6},{4,3,6},{1,3,3}},{{1,3,6},{4,3,6},{4,0,6}},{{1,3,6},{1,0,6},{4,0,6}},{{1,3,3},{1,0,3},{4,0,3}},{{1,3,3},{4,3,3},{4,0,3}}};
+      
 
-
-
-
-
-
-
+        //This just does Keyboard managment stuff
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
         @Override
               public boolean dispatchKeyEvent(KeyEvent ke) {
@@ -309,455 +184,314 @@ public class Main extends JComponent{
                   return false;
               }
           }
-      });
+        });
 
-      /*
-    newLineButton.addActionListener(new ActionListener() {
+        //Sets up camera position x4,y4,and z4. frame and frameav are for measuring FPS
+        float x4 = 0;
+        float y4 = 0;
+        float z4 = 0;
+        int frame = 0;
+        double frameav=0;
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            int x1 = (int) (Math.random()*320);
-            int x2 = (int) (Math.random()*320);
-            int y1 = (int) (Math.random()*200);
-            int y2 = (int) (Math.random()*200);
-            Color randomColor = new Color((float)Math.random(), (float)Math.random(), (float)Math.random());
-            comp.addLine(x1, y1, x2, y2, randomColor);
-        }
-    });
-    clearButton.addActionListener(new ActionListener() {
+        //Sets up size of screen
+        int w = 600;
+        int h = 600;
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            comp.clearLines();
-        }
-    });
+        //Sets up Bufferd images and starts screen
+        comp.img = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
+        comp.img2 = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
+        comp.repaint();
+        testFrame.pack();
+        testFrame.setVisible(true);
 
-
-      int x1 = (int) (Math.random()*320);
-      int x2 = (int) (Math.random()*320);
-      int y1 = (int) (Math.random()*200);
-      int y2 = (int) (Math.random()*200);
-    */
-
-
-      /*
-    float [][] poly = easy[0];
-
-      int[][] solved = math.solvePoly(poly, -30);
-
-      Color randomColor = new Color(0,0,0);
-      //System.out.print(Arrays.toString(solved[0]));
-
-
-      int x1 =(int)solved[0][0]+10;
-      int y1=(int)solved[0][1]+100;
-      int x2=(int)solved[1][0]+10;
-      int y2=(int)solved[1][1]+100;
-      int x3=(int)solved[2][0]+10;
-      int y3=(int)solved[2][1]+100;
-
-
-      comp.addLine(x1, y1, x2, y2, randomColor);
-      comp.addLine(x2, y2, x3, y3, randomColor);
-      comp.addLine(x3, y3, x1, y1, randomColor);
-      System.out.println("done");
-    */
-      float x4 = 0;
-      float y4 = 0;
-      float z4 = 0;
-      int frame = 0;
-      double frameav=0;
-
-
-    int w = 600;
-    int h = 600;
-
-    comp.img = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
-    comp.img2 = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
-    comp.repaint();
-    testFrame.pack();
-    testFrame.setVisible(true);
-
-
-    /*
-    for (each triangle in the scene) { 
-    // Project vertices
-    ... 
-    // Compute bbox of the projected triangle
-    ... 
-    for (y = ymin; y <= ymax; ++y) { 
-        for (x = xmin; x <= xmax; ++x) { 
-            // Check if the current pixel is within the triangle
-            float z;  // Distance from the camera to the triangle 
-            if (pixelContainedIn2DTriangle(v0, v1, v2, x, y, &z)) { 
-                // If the distance to that triangle is shorter than what's stored in the
-                // z-buffer, update the z-buffer and the image at pixel location (x,y)
-                // with the color of that triangle
-                if (z < zbuffer(x, y)) { 
-                    zbuffer(x, y) = z; 
-                    image(x, y) = triangle[i].color; 
-                } 
-            } 
-        } 
-    } 
-}
-
-  */
- /*
- float[][] testn = {{-1,1,-1},{1,1,1},{1,1,-1}};
- float[] norm= math.makenormal(testn);
- */
-
-
+        //Rotation
         int rot = 0;
+
+        //These are light views currently only change Flat shading, not Shadows yet
         //topdown
         //float[] lightv={0,1,0};
 
         //side angle
         float[] lightv={.5f,.5f,-.5f};
 
-    while (true){
+        //While true to make it a "video"
 
+        while (true){
+            //Starts rendering time
+            long a = System.nanoTime();
 
-        long a = System.nanoTime();
-        comp.clearLines();
+            //Creates new buffers for Light and Normal rendering Passes
+            float[][] buffer = new float[w][h];
+            float[][] bufferlight = new float[w][h];
 
-        float[][] buffer = new float[w][h];
-        float[][] buffer2 = new float[w][h];
-        float[][] bufferlight = new float[w][h];
-         for ( int rc = 0; rc < h; rc++ ) {
-          for ( int cc = 0; cc < w; cc++ ) {
-            // Set the pixel colour of the image n.b. x = cc, y = rc
-                comp.img2.setRGB(cc, rc, Color.WHITE.getRGB() );
-              buffer[cc][rc]=1000f;
-              buffer2[cc][rc]=0;
-              bufferlight[cc][rc]=1000f;
-
-                //for cols
+            //loops through every pixel
+            for ( int rc = 0; rc < h; rc++ ) {
+                for ( int cc = 0; cc < w; cc++ ) {
+                    //Sets pixel color to white
+                    comp.img2.setRGB(cc, rc, Color.WHITE.getRGB() );
+                    //set depth in buffers for this pixel
+                    buffer[cc][rc]=1000f;
+                    bufferlight[cc][rc]=1000f;
+                }
             }
 
-        }//for rows
+
+            //gets first object in the object list
+            Objtools lobject= objlist[0];
+            //gets the first face of said obkect
+            int[] lface = lobject.rface[0];
+            //sets translations from the initial values in Obj Object
+            float lxn=lobject.x;
+            float lyn=lobject.y;
+            float lzn=lobject.z;
+            //Creates point using The numbers in the Face and the verticeis in Rvert from the OBJ object
+            float[] lpoint = {(float)lobject.rvert[lface[0]-1][0]+lxn,(float)lobject.rvert[lface[0]-1][1]+lyn,(float)lobject.rvert[lface[0]-1][2]+lzn};
+
+            //Solves distance diffrence, still not entirely sure why this works
+            float lwhy = math.distance1(lpoint,20,x4,y4,z4,0)-math.distance1(lpoint,20,0,0,-1.8f,0);
+
+            //start of the first pass for Lighting, loops through every object in the Obj list
+            for (Objtools object : objlist) {
+
+                //Loops through every face in the object
+                for (int i=0;i<object.rface.length;i++){
+                    //gets the face we are currently on
+                    int [] face = object.rface[i];
+                    //sets translations from the initial values in Obj Object
+                    float xn=object.x;
+                    float yn=object.y;
+                    float zn=object.z;
+                    //Creates points using The numbers in the Face and the verticeis in Rvert from the OBJ object adding inital translation values
+                    float[] g = {(float)object.rvert[face[0]-1][0]+xn,(float)object.rvert[face[0]-1][1]+yn,(float)object.rvert[face[0]-1][2]+zn};
+                    float[] hh = {(float)object.rvert[face[1]-1][0]+xn,(float)object.rvert[face[1]-1][1]+yn,(float)object.rvert[face[1]-1][2]+zn};
+                    float[] f = {(float)object.rvert[face[2]-1][0]+xn,(float)object.rvert[face[2]-1][1]+yn,(float)object.rvert[face[2]-1][2]+zn};
+                    
+                    //creates a polygon with these 3 triangles
+                    float[][] poly={g,hh,f};
+                    //float[][] polyr = math.rotateobj(poly,rot,0);
+
+                    //Solves location and distance of polygon
+                    int[][] solved = math.solvePolyLight(poly,80,0,0);
+                    float tridist = lwhy + math.distance(poly,20,0,0,0,0);
+               
+                    //do if the point is able to be renderd
+                    if(math.dorender==1){
+
+                        //Calculates Bounding box
+                        int hi[][] = math.bb(solved,0,1,1);
+                        int minx=hi[0][0];                
+                        int miny=hi[1][0];
+                        int maxx=hi[0][1];
+                        int maxy=hi[1][1];
+                        minx=math.clamp(minx,0,(w-1));
+                        miny=math.clamp(miny,0,(h-1));
+                        maxx=math.clamp(maxx,0,(w-1));
+                        maxy=math.clamp(maxy,0,(h-1));
 
 
+                        //for each pixel
+                        for ( int rc = miny; rc < maxy; rc++ ) {
+                            for ( int cc = minx; cc < maxx; cc++ ) {
 
-        Objtools lobject= objlist[0];
-        int[] lface = lobject.rface[0];
-        float lxn=lobject.x;
-        float lyn=lobject.y;
-        float lzn=lobject.z;
-        float[] lpoint = {(float)lobject.rvert[lface[0]-1][0]+lxn,(float)lobject.rvert[lface[0]-1][1]+lyn,(float)lobject.rvert[lface[0]-1][2]+lzn};
-        float lwhy = math.distance1(lpoint,20,x4,y4,z4,0)-math.distance1(lpoint,20,0,0,-1.8f,0);
+                                //Find Sined stuff. https://jtsorlinis.github.io/rendering-tutorial/ Really helped
+                                int[] pa={solved[0][0],solved[0][1]};
+                                int[] pb={solved[1][0],solved[1][1]};
+                                int[] pc={solved[2][0],solved[2][1]};
+                                float abc = math.edge(pa,pb,pc);
+                                if(abc>0){
+                                    int[] point = {cc,rc};
+                                    float abp = math.edge(pa,pb,point);
+                                    float bcp = math.edge(pb,pc,point);
+                                    float cap = math.edge(pc,pa,point);
+                                    //Calculate the wieghts
+                                    float wa = bcp/abc;
+                                    float wb= cap/abc;
+                                    float wc = abp/abc;
 
+                                    //weird distance function
+                                    //float disty= math.pointdistance(poly, wa, wb, wc,20,0,0,0);
 
-        for (Objtools object : objlist) {
+                                    //checks if point is in triangle
+                                    if(abp>=0 && bcp>=0 && cap>=0){
 
-
-            for (int i=0;i<object.rface.length;i++){
-                int [] face = object.rface[i];
-                float xn=object.x;
-                float yn=object.y;
-                float zn=object.z;
-                float[] g = {(float)object.rvert[face[0]-1][0]+xn,(float)object.rvert[face[0]-1][1]+yn,(float)object.rvert[face[0]-1][2]+zn};
-
-                float[] hh = {(float)object.rvert[face[1]-1][0]+xn,(float)object.rvert[face[1]-1][1]+yn,(float)object.rvert[face[1]-1][2]+zn};
-
-                float[] f = {(float)object.rvert[face[2]-1][0]+xn,(float)object.rvert[face[2]-1][1]+yn,(float)object.rvert[face[2]-1][2]+zn};
-
-                float[][] poly={g,hh,f};
-                //float[][] polyr = math.rotateobj(poly,rot,0);
-                int[][] solved = math.solvePolyLight(poly,80,0,0);
-                float tridist = lwhy + math.distance(poly,20,0,0,0,0);
-
-                float[] norm= math.makenormal(poly);
-
-                //float doted = Math.max(0,math.dotprod(norm,lightv));
-                float doted = 1;
-                //do color change
-                float red,green,blue;
-                red = object.rmat[i][0]*doted;
-                green = object.rmat[i][1]*doted;
-                blue = object.rmat[i][2]*doted;
-                Color tricolor = new Color((int)red,(int)green,(int)blue);
-
-                if(math.dorender==1){
-
-                    int hi[][] = math.bb(solved,0,1,1);
-
-                    int minx=hi[0][0];                
-                    int miny=hi[1][0];
-                    int maxx=hi[0][1];
-                    int maxy=hi[1][1];
-                    minx=math.clamp(minx,0,(w-1));
-                    miny=math.clamp(miny,0,(h-1));
-                    maxx=math.clamp(maxx,0,(w-1));
-                    maxy=math.clamp(maxy,0,(h-1));
-                    //for each pixle
-                    for ( int rc = miny; rc < maxy; rc++ ) {
-                        for ( int cc = minx; cc < maxx; cc++ ) {
-                            int[] pa={solved[0][0],solved[0][1]};
-                            int[] pb={solved[1][0],solved[1][1]};
-                            int[] pc={solved[2][0],solved[2][1]};
-                            float abc = math.edge(pa,pb,pc);
-                            if(abc>0){
-                                int[] point = {cc,rc};
-
-                                float abp = math.edge(pa,pb,point);
-                                float bcp = math.edge(pb,pc,point);
-                                float cap = math.edge(pc,pa,point);
-
-                                float wa = bcp/abc;
-                                float wb= cap/abc;
-                                float wc = abp/abc;
-
-
-                                 float disty= math.pointdistance(poly, wa, wb, wc,20,0,0,0);
-
-                                if(abp>=0 && bcp>=0 && cap>=0){
-                                    //if(tridist < buffer[cc][rc])
-
-                                    if(tridist < bufferlight[cc][rc]){
-                                        //pixle is in triangle and its depth is less than others
-                                        bufferlight[cc][rc] = tridist;
-
-                                        /*
-                                        if (Main.isTabPressed()) {
-
-                                            Color distcolor = new Color(math.clamp((int)(.7*disty),0,255),math.clamp((int)(.7*disty),0,255),math.clamp((int)(.7*disty),0,255));
-                                            comp.img2.setRGB(cc, rc, distcolor.getRGB() );
-                                        }else{
-                                            comp.img2.setRGB(cc, rc, tricolor.getRGB() );
+                                        if(tridist < bufferlight[cc][rc]){
+                                            //this happens if pixel is in triangle and its depth is less than others
+                                            bufferlight[cc][rc] = tridist;
                                         }
-                                        */
-
-
                                     }
                                 }
                             }
                         }
+
+
+                    }
+                }
+            }
+            //Most stuff is the same as Lighting pass. This is the pass for actual rendering
+            for (Objtools object : objlist) {
+                for (int i=0;i<object.rface.length;i++){
+
+                    int [] face = object.rface[i];
+                    float xn=object.x;
+                    float yn=object.y;
+                    float zn=object.z;
+
+                    float[] g = {(float)object.rvert[face[0]-1][0]+xn,(float)object.rvert[face[0]-1][1]+yn,(float)object.rvert[face[0]-1][2]+zn};
+                    float[] hh = {(float)object.rvert[face[1]-1][0]+xn,(float)object.rvert[face[1]-1][1]+yn,(float)object.rvert[face[1]-1][2]+zn};
+                    float[] f = {(float)object.rvert[face[2]-1][0]+xn,(float)object.rvert[face[2]-1][1]+yn,(float)object.rvert[face[2]-1][2]+zn};
+
+                    float[][] poly={g,hh,f};
+                    //float[][] polyr = math.rotateobj(poly,rot,0);
+                    int[][] solved = math.solvePoly(poly,80,x4,y4,z4,0);
+
+                    //Calculates The normal of the polygon and then finds the dot product in relation to the light direction
+                    float[] norm= math.makenormal(poly);
+                    float doted = Math.max(0,math.dotprod(norm,lightv));
+
+                    //do color change based on normal
+                    float red,green,blue;
+                    red = object.rmat[i][0]*doted;
+                    green = object.rmat[i][1]*doted;
+                    blue = object.rmat[i][2]*doted;
+                    Color tricolor = new Color((int)red,(int)green,(int)blue);
+
+                    //calculates distance
+                    float tridist = math.distance(poly, 20,x4,y4,z4,0);
+
+                    if(math.dorender==1){
+
+                        int hi[][] = math.bb(solved,0,1,1);
+                        int minx=hi[0][0];
+                        int miny=hi[1][0];
+                        int maxx=hi[0][1];
+                        int maxy=hi[1][1];
+                        minx=math.clamp(minx,0,(w-1));
+                        miny=math.clamp(miny,0,(h-1));
+                        maxx=math.clamp(maxx,0,(w-1));
+                        maxy=math.clamp(maxy,0,(h-1));
+
+                        for ( int rc = miny; rc < maxy; rc++ ) {
+                            for ( int cc = minx; cc < maxx; cc++ ) {
+                                int[] pa={solved[0][0],solved[0][1]};
+                                int[] pb={solved[1][0],solved[1][1]};
+                                int[] pc={solved[2][0],solved[2][1]};
+                                float abc = math.edge(pa,pb,pc);
+
+                                if(abc>0){
+                                    int[] point = {cc,rc};
+
+                                    float abp = math.edge(pa,pb,point);
+                                    float bcp = math.edge(pb,pc,point);
+                                    float cap = math.edge(pc,pa,point);
+
+                                    float wa = bcp/abc;
+                                    float wb= cap/abc;
+                                    float wc = abp/abc;
+
+                                    //float disty= math.pointdistance(poly, wa, wb, wc,20,x4,y4,z4);
+                                    if(abp>=0 && bcp>=0 && cap>=0){
+
+                                        if(tridist < buffer[cc][rc]){ 
+    
+                                            buffer[cc][rc] = tridist;
+                                            //finds what point the pixel is loking at and then transforms that to the lights view
+                                            float[] pointontri=math.pointfinder(poly,wa,wb,wc);
+                                            int[] light = math.solvepointLight(pointontri,80,0,0);
+                                            /*
+                                            int fhgh = math.clamp(light[0],0,599);
+                                            int fhgf = math.clamp(light[1],0,599);
+                                            */
+                                            int Lightx =light[0];
+                                            int Lighty =light[1];
+
+
+                                            //if is on screen and within Light depth buffer size
+                                            if((Lightx<600&&Lightx>=0)&&(Lighty<600&&Lighty>=0)&&(math.dorender ==1)){
+                                                //find distance from lights view
+                                                float lightdist = bufferlight[Lightx][Lighty];
+                                                //If it is less it is in shadow if not it is not in shadow and should be renderd normaly
+                                                if(lightdist<=tridist){
+                                                    //shadow
+                                                    comp.img2.setRGB(cc, rc, Color.red.getRGB() );
+                                                }else{
+                                                    //normal
+                                                    comp.img2.setRGB(cc, rc, tricolor.getRGB() );
+                                                }
+                                            }else{
+                                                //index out of bounds or dorender says dont render
+                                                comp.img2.setRGB(cc, rc, Color.green.getRGB() );
+                                            }
+
+                                        } 
+                                    }
+
+                                }
+
+                            }
+                        }
                     }
 
-
-                }
-            }
-
-
-
-    }
-for (Objtools object : objlist) {
-
-
-        for (int i=0;i<object.rface.length;i++){
-
-                int [] face = object.rface[i];
-                float xn=object.x;
-                float yn=object.y;
-                float zn=object.z;
-                float[] g = {(float)object.rvert[face[0]-1][0]+xn,(float)object.rvert[face[0]-1][1]+yn,(float)object.rvert[face[0]-1][2]+zn};
-
-                float[] hh = {(float)object.rvert[face[1]-1][0]+xn,(float)object.rvert[face[1]-1][1]+yn,(float)object.rvert[face[1]-1][2]+zn};
-
-                float[] f = {(float)object.rvert[face[2]-1][0]+xn,(float)object.rvert[face[2]-1][1]+yn,(float)object.rvert[face[2]-1][2]+zn};
-
-                float[][] poly={g,hh,f};
-                //float[][] polyr = math.rotateobj(poly,rot,0);
-                int[][] solved = math.solvePoly(poly,80,x4,y4,z4,0);
-                float[] norm= math.makenormal(poly);
-
-                float doted = Math.max(0,math.dotprod(norm,lightv));
-
-                //do color change
-                float red,green,blue;
-                red = object.rmat[i][0]*doted;
-                green = object.rmat[i][1]*doted;
-                blue = object.rmat[i][2]*doted;
-                Color tricolor = new Color((int)red,(int)green,(int)blue);
-
-
-                float tridist = math.distance(poly, 20,x4,y4,z4,0);
-                if(math.dorender==1){
-
-                    int hi[][] = math.bb(solved,0,1,1);
-
-                int minx=hi[0][0];
-                int miny=hi[1][0];
-                int maxx=hi[0][1];
-                int maxy=hi[1][1];
-                minx=math.clamp(minx,0,(w-1));
-                miny=math.clamp(miny,0,(h-1));
-                maxx=math.clamp(maxx,0,(w-1));
-                maxy=math.clamp(maxy,0,(h-1));
-
-
-
-
-                    for ( int rc = miny; rc < maxy; rc++ ) {
-                      for ( int cc = minx; cc < maxx; cc++ ) {
-                            int[] pa={solved[0][0],solved[0][1]};
-                          int[] pb={solved[1][0],solved[1][1]};
-                          int[] pc={solved[2][0],solved[2][1]};
-                          float abc = math.edge(pa,pb,pc);
-
-                          if(abc>0){
-                          int[] point = {cc,rc};
-
-                          float abp = math.edge(pa,pb,point);
-                          float bcp = math.edge(pb,pc,point);
-                          float cap = math.edge(pc,pa,point);
-
-                          float wa = bcp/abc;
-                          float wb= cap/abc;
-                          float wc = abp/abc;
-
-                          float disty= math.pointdistance(poly, wa, wb, wc,20,x4,y4,z4);
-                          if(abp>=0 && bcp>=0 && cap>=0){
-                            //if(tridist < buffer[cc][rc])
-                            if(tridist < buffer[cc][rc]){ 
-                                //Color tricolor = new Color(object.rmat[i][0],object.rmat[i][1],object.rmat[i][2]);
-                                //buffer[cc][rc] = tridist;
-                                buffer[cc][rc] = tridist;
-
-
-
-
-                                float[] pointontri=math.pointfinder(poly,wa,wb,wc);
-                                int[] light = math.solvepointLight(pointontri,80,0,0);
-                                /*
-                                int fhgh = math.clamp(light[0],0,599);
-                                int fhgf = math.clamp(light[1],0,599);
-                                */
-                                int fhgh =light[0];
-                                int fhgf =light[1];
-
-
-
-                                if((fhgh<600&&fhgh>=0)&&(fhgf<600&&fhgf>=0)&&(math.dorender ==1)){
-                                    float lightdist = bufferlight[fhgh][fhgf];
-                                    if(lightdist<=tridist){
-                                        comp.img2.setRGB(cc, rc, Color.red.getRGB() );
-                                    }else{
-                                        comp.img2.setRGB(cc, rc, tricolor.getRGB() );
-                                    }
-                                }else{
-                                    comp.img2.setRGB(cc, rc, Color.green.getRGB() );
-                                }
-
-
-                                  /*
-                                 if((fhgh<600&&fhgh>=0)&&(fhgf<600&&fhgf>=0)&&(math.dorender ==1)){
-                                    float lightdist = bufferlight[fhgh][fhgf];
-                                    if(lightdist<=tridist){
-                                        comp.img2.setRGB(cc, rc, Color.black.getRGB() );
-                                    }else{
-                                        comp.img2.setRGB(cc, rc, tricolor.getRGB() );
-                                    }
-                                }else{
-                                    comp.img2.setRGB(cc, rc, tricolor.getRGB() );
-                                }
-
-                                if (Main.isTabPressed()) {
-                                    Color distColor = new Color((int)(.7*tridist),(int)(.7*tridist),(int)(.7*tridist));
-                                    comp.img2.setRGB(cc, rc, distColor.getRGB() );
-                                }else{
-                                    comp.img2.setRGB(cc, rc, tricolor.getRGB() );
-                                }
-                                */ 
-                            } 
-                          }
-
-                          }
-
-                        }
-                    }//for rows
                 }
 
-                    /*
-                    Color randomColor = new Color(255,0,0);
-                //System.out.print(Arrays.toString(solved[0]));
-
-                    int x1 =(int)solved[0][0];
-                    int y1=(int)solved[0][1];
-                    int x2=(int)solved[1][0];
-                    int y2=(int)solved[1][1];
-                    int x3=(int)solved[2][0];
-                    int y3=(int)solved[2][1];
-
-
-                    comp.addLine(x1, y1, x2, y2, randomColor);
-                    comp.addLine(x2, y2, x3, y3, randomColor);
-                    comp.addLine(x3, y3, x1, y1, randomColor);
-                */
 
             }
 
+            //Add to movements if a key is pressed
+            float movespeed=.4f;
+            if (Main.isWPressed()) {
+                z4=z4-movespeed;
+            }
+            if (Main.isSPressed()) {
+                z4=z4+movespeed;
+            }
+            if (Main.isAPressed()) {
+                x4=x4+movespeed;
+            }
+            if (Main.isDPressed()) {
+                x4=x4-movespeed;
+            }
+            if (Main.isSpPressed()) {
+                y4=y4-movespeed;
+            }
+            if (Main.iscPressed()) {
+                y4=y4+movespeed;
+            }
 
-         }
+            //change displayed image to the new renderd image and display
+            comp.img=comp.img2;
+            comp.repaint();
+            testFrame.pack();
+            testFrame.setVisible(true);
 
 
+            //finish time calculations and calculate FPS
+            long b = System.nanoTime();
+            long elapsedTime = b-a;
+            double seconds = (double)elapsedTime / 1_000_000_000.0; 
+            //System.out.println(1/seconds);
 
+            if(frame<60){
+                frame=frame+1;
+                frameav=frameav+seconds;
+            }else{
+                frame=0;
+                System.out.println(1/(frameav/60));
+                frameav=0;
+            }
 
+            //animation stuff
+            //rot=rot+5;
+            //obj.z=obj.z+0f;
 
+            //try to sleep so that image looks good updating
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                //quit thread
+                return;
+            }
 
-    }
-
-    //Move stuff
-        float movespeed=.4f;
-        if (Main.isWPressed()) {
-            z4=z4-movespeed;
         }
-        if (Main.isSPressed()) {
-            z4=z4+movespeed;
-        }
-        if (Main.isAPressed()) {
-            x4=x4+movespeed;
-        }
-        if (Main.isDPressed()) {
-            x4=x4-movespeed;
-        }
-        if (Main.isSpPressed()) {
-            y4=y4-movespeed;
-        }
-        if (Main.iscPressed()) {
-            y4=y4+movespeed;
-        }
-
-
-        //repaint and sleep so it is visable
-
-        comp.img=comp.img2;
-
-        comp.repaint();
-        testFrame.pack();
-        testFrame.setVisible(true);
-
-        long b = System.nanoTime();
-        long elapsedTime = b-a;
-
-        double seconds = (double)elapsedTime / 1_000_000_000.0; 
-        //System.out.println(1/seconds);
-
-        if(frame<60){
-            frame=frame+1;
-            frameav=frameav+seconds;
-        }else{
-            frame=0;
-            System.out.println(1/(frameav/60));
-            frameav=0;
-
-        }
-        rot=rot+5;
-        //obj.z=obj.z+0f;
-
-        try {
-            // to sleep .2 seconds
-            //Thread.sleep(200);
-
-            Thread.sleep(1);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            //quit thread
-            return;
-        }
-
-    }
     }
 }

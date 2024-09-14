@@ -1,37 +1,31 @@
-
 import java.io.File; // Import the File class
 import java.io.FileNotFoundException; // Import this class to handle errors
 import java.util.Arrays; // Import the Scanner class to read text files
 import java.util.Scanner;
 
-/**
- * Write a description of class Objtools here.
- *
- * @author (your name)
- * @version (a version number or a date)
- */
 public class Objtools {
-    // instance variables - replace the example below with your own
-    /**
-     * Constructor for objects of class Objtools
-     */
+    //File path
     final private String file;
-    // teapot.txt
+    //Final arrays for the faces verticies and colors
     public int[][] rface;
     public double[][] rvert;
-    public String matfile;
     public int[][] rmat;
+
+    public String matfile;
     public int[][] mattemp;
     
+    //initial x's y's and z's for location and scale
     public float x;
     public float y;
     public float z;
-    
     public int sx;
     public int sy;
     public int sz;
+
+
     public Mathing math;
 
+    //Not Working Right now
     public void readFilenotex() {
         int[][] face = {};
         double[][] vert = {};
@@ -75,15 +69,16 @@ public class Objtools {
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
                 if (data.charAt(0) == 'v') {
+                    //adds vertice to vert array
                     double[] ve = vert(data,sx,sy,sz);
                     vert = Arrays.copyOf(vert, vert.length + 1);
                     vert[vert.length - 1] = ve;
                 } else if (data.charAt(0) == 'f') {
+                    //adds face to face array
                     int[] a = face(data);
                     face = Arrays.copyOf(face, face.length + 1);
                     face[face.length - 1] = a;
-
-                    
+                    //sets color to current material color
                     int[] help = mattemp[curmat];
                     matmortemp= Arrays.copyOf(matmortemp, matmortemp.length + 1);
                     matmortemp[matmortemp.length - 1] = help;
@@ -95,12 +90,12 @@ public class Objtools {
                 }else if (data.charAt(0) == 's'){
                     System.out.println("s");
                 }else if (data.charAt(0) == 'm'){
+                    //reads mtl file
                     String[] parts = data.split(" ");
                     matfile = parts[1];
                     readmtl(matfile);
                 }else if (data.charAt(0) == 'u'){
                     curmat = curmat+1;
-                
                 }else {
                     //uhoh
                 }
@@ -116,21 +111,25 @@ public class Objtools {
         rmat = matmortemp;
     }
     
-    
+    //reads mtl file
     public void readmtl(String mtl){
         String newmat;
         int[][] materialprop = {};
         try {
             File myObj = new File(mtl);
+
             Scanner myReader = new Scanner(myObj);
+            //reads each line
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
                 if (data==null){
                     //skip line
                 }else if (data.charAt(0) == 'n') {
+                    //gets material name
                     String[] parts = data.split(" ");
                     newmat = parts[1];
                 } else if (data.charAt(1) == 'd') {
+                    //gets color and adds that to temp material array
                     int[] rgbdat = mat(data,1,1,1);
                     materialprop = Arrays.copyOf(materialprop, materialprop.length + 1);
                     materialprop[materialprop.length - 1] = rgbdat;
@@ -147,23 +146,14 @@ public class Objtools {
         mattemp=materialprop;
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    // Integer.parseInt(parts[1])
-    // Double.parseDouble(parts[1])
-
+    //reads face line in obj file
     public int[] face(String face) {
         String[] parts = face.split(" ");
         int[] a = { Integer.parseInt(parts[1]), Integer.parseInt(parts[2]), Integer.parseInt(parts[3]) };
         return a;
     }
-    
+
+    //reads vertice line in obj file
     public double[] vert(String vert,int c1, int c2, int c3) {
         String[] parts = vert.split(" ");
         double why = Double.parseDouble(parts[1])*c1;
@@ -173,6 +163,7 @@ public class Objtools {
         return a;
     }
 
+    //reads a color line in mtl file
     public int[] mat(String vert,int c1, int c2, int c3) {
         String[] parts = vert.split(" ");
         double why = Double.parseDouble(parts[1])*c1;
@@ -188,6 +179,7 @@ public class Objtools {
         return a;
     }
 
+    //Constructor
     public Objtools(String a,int x,int y,int z, int sx1, int sy1, int sz1) {
         // initialise instance variables
         this.x = x;
@@ -198,11 +190,4 @@ public class Objtools {
         this.sz = sz1;
         this.file=a;
     }
-
-    /**
-     * An example of a method - replace this comment with your own
-     *
-     * @param y a sample parameter for a method
-     * @return the sum of x and y
-     */
 }
