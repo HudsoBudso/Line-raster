@@ -202,6 +202,13 @@ public class Mathing
         return a;
     }
 
+    public float[] rotate(float[] in, float r1, float r2){
+
+        float[][] roty={{1,0,0,0},{0,(float)Math.cos(r1),(float)-Math.sin(r1),0},{0,(float)Math.sin(r1),(float)Math.cos(r1),0},{0,0,0,1}};
+        float[] inter2 = matmult(roty,in);
+        return inter2;
+    }
+
     //calculates distance to poly
     public float distance(float[][] poly,float scale,float x4, float y4, float z4,float r1){
         float a = distance1(poly[0],scale,x4,y4,z4,r1);

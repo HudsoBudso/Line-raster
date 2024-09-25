@@ -120,11 +120,16 @@ public class Main extends JComponent{
 
 
 
+        long testtime1= System.nanoTime();
+        long testtime2 = System.nanoTime();
+        long  testtime3 = testtime2-testtime1;
+
+        
 
 
         //Sets up mathing object with All the uesfull math functions, is initialised as (Fov,Near Plane, Far plane)
         Mathing math = new Mathing(45,1,30);
-      
+
 
         //This just does Keyboard managment stuff
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
@@ -212,30 +217,44 @@ public class Main extends JComponent{
         //float[] lightv={0,1,0};
 
         //side angle
-        float[] lightv={.5f,.5f,-.5f};
+        //float[] lightv={.5f,.5f,-.5f};
+
+        //strait on
+        float[] lighta={0,0,-1,0};
+
+
+        //float reto = (float)Math.PI/2;
+        float reto = 0;
+        //Sets scale of shadow map
+        int shadowscale = 10;
+
+        boolean doshadows =true;
+
+
 
         //While true to make it a "video"
-
         while (true){
             //Starts rendering time
             long a = System.nanoTime();
 
+            float[] lightv= math.rotate(lighta,-reto,0);
             //Creates new buffers for Light and Normal rendering Passes
             float[][] buffer = new float[w][h];
             float[][] bufferlight = new float[w][h];
 
+
+            //clears image
+            comp.img2=new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
             //loops through every pixel
             for ( int rc = 0; rc < h; rc++ ) {
                 for ( int cc = 0; cc < w; cc++ ) {
-                    //Sets pixel color to white
-                    comp.img2.setRGB(cc, rc, Color.WHITE.getRGB() );
                     //set depth in buffers for this pixel
-                    buffer[cc][rc]=1000f;
-                    bufferlight[cc][rc]=1000f;
+                    buffer[cc][rc]=Float.POSITIVE_INFINITY;
+                    bufferlight[cc][rc]=Float.POSITIVE_INFINITY;
                 }
             }
 
-
+            
             //gets first object in the object list
             Objtools lobject= objlist[0];
             //gets the first face of said obkect
@@ -247,87 +266,110 @@ public class Main extends JComponent{
             //Creates point using The numbers in the Face and the verticeis in Rvert from the OBJ object
             float[] lpoint = {(float)lobject.rvert[lface[0]-1][0]+lxn,(float)lobject.rvert[lface[0]-1][1]+lyn,(float)lobject.rvert[lface[0]-1][2]+lzn};
 
+
             //Solves distance diffrence, still not entirely sure why this works
             float lwhy = math.distance1(lpoint,20,x4,y4,z4,0)-math.distance1(lpoint,20,0,0,-1.8f,0);
 
-            //start of the first pass for Lighting, loops through every object in the Obj list
-            for (Objtools object : objlist) {
+
+            float[] lightloc = {x4,y4,-z4,0};
+
+            float[][] lightv2 = {{lightv[0],0,0,0},{0,lightv[1],0,0},{0,0,lightv[2],0},{0,0,0,0}};
+
+            float[] lightss = math.matmult(lightv2,lightloc);
+
+            //float lightss = math.dotprod(lightloc,lightv);
+
+            //float lwhy = math.distance1(lpoint,20,x4,y4,z4,0)-math.distance1(lpoint,20,lighttrans[0],lighttrans[1]+1.8f,lighttrans[2],0);
+
+            //going to need to calculate thing along the axis if you know what i mean
+            //float lwhy = math.distance1(lpoint,20,x4,y4,z4,0)-math.distance1(lpoint,20,lightss[0],lightss[1],lightss[2],0);
+
+            if (!Main.isTabPressed()) {
+                reto = 0;
+            }else{
+                reto = (float)Math.PI/2;
+            }
+
+            if(doshadows){
+                //start of the first pass for Lighting, loops through every object in the Obj list
+                for (Objtools object : objlist) {
 
                 //Loops through every face in the object
-                for (int i=0;i<object.rface.length;i++){
-                    //gets the face we are currently on
-                    int [] face = object.rface[i];
-                    //sets translations from the initial values in Obj Object
-                    float xn=object.x;
-                    float yn=object.y;
-                    float zn=object.z;
-                    //Creates points using The numbers in the Face and the verticeis in Rvert from the OBJ object adding inital translation values
-                    float[] g = {(float)object.rvert[face[0]-1][0]+xn,(float)object.rvert[face[0]-1][1]+yn,(float)object.rvert[face[0]-1][2]+zn};
-                    float[] hh = {(float)object.rvert[face[1]-1][0]+xn,(float)object.rvert[face[1]-1][1]+yn,(float)object.rvert[face[1]-1][2]+zn};
-                    float[] f = {(float)object.rvert[face[2]-1][0]+xn,(float)object.rvert[face[2]-1][1]+yn,(float)object.rvert[face[2]-1][2]+zn};
-                    
-                    //creates a polygon with these 3 triangles
-                    float[][] poly={g,hh,f};
-                    //float[][] polyr = math.rotateobj(poly,rot,0);
+                    for (int i=0;i<object.rface.length;i++){
+                        //gets the face we are currently on
+                        int [] face = object.rface[i];
+                        //sets translations from the initial values in Obj Object
+                        float xn=object.x;
+                        float yn=object.y;
+                        float zn=object.z;
+                        //Creates points using The numbers in the Face and the verticeis in Rvert from the OBJ object adding inital translation values
+                        float[] g = {(float)object.rvert[face[0]-1][0]+xn,(float)object.rvert[face[0]-1][1]+yn,(float)object.rvert[face[0]-1][2]+zn};
+                        float[] hh = {(float)object.rvert[face[1]-1][0]+xn,(float)object.rvert[face[1]-1][1]+yn,(float)object.rvert[face[1]-1][2]+zn};
+                        float[] f = {(float)object.rvert[face[2]-1][0]+xn,(float)object.rvert[face[2]-1][1]+yn,(float)object.rvert[face[2]-1][2]+zn};
 
-                    //Solves location and distance of polygon
-                    int[][] solved = math.solvePolyLight(poly,80,0,0);
-                    float tridist = lwhy + math.distance(poly,20,0,0,0,0);
-               
-                    //do if the point is able to be renderd
-                    if(math.dorender==1){
+                        //creates a polygon with these 3 triangles
+                        float[][] poly={g,hh,f};
+                        //float[][] polyr = math.rotateobj(poly,rot,0);
 
-                        //Calculates Bounding box
-                        int hi[][] = math.bb(solved,0,1,1);
-                        int minx=hi[0][0];                
-                        int miny=hi[1][0];
-                        int maxx=hi[0][1];
-                        int maxy=hi[1][1];
-                        minx=math.clamp(minx,0,(w-1));
-                        miny=math.clamp(miny,0,(h-1));
-                        maxx=math.clamp(maxx,0,(w-1));
-                        maxy=math.clamp(maxy,0,(h-1));
+                        //Solves location and distance of polygon
+                        int[][] solved = math.solvePolyLight(poly,shadowscale,reto,0);
 
+                        float tridist = lwhy + math.distance(poly,20,0,0,0,0);
 
-                        //for each pixel
-                        for ( int rc = miny; rc < maxy; rc++ ) {
-                            for ( int cc = minx; cc < maxx; cc++ ) {
+                        //do if the point is able to be renderd
+                        if(math.dorender==1){
+                            //Calculates Bounding box
+                            int hi[][] = math.bb(solved,0,1,1);
+                            int minx=hi[0][0];                
+                            int miny=hi[1][0];
+                            int maxx=hi[0][1];
+                            int maxy=hi[1][1];
+                            minx=math.clamp(minx,0,(w-1));
+                            miny=math.clamp(miny,0,(h-1));
+                            maxx=math.clamp(maxx,0,(w-1));
+                            maxy=math.clamp(maxy,0,(h-1));
 
-                                //Find Sined stuff. https://jtsorlinis.github.io/rendering-tutorial/ Really helped
-                                int[] pa={solved[0][0],solved[0][1]};
-                                int[] pb={solved[1][0],solved[1][1]};
-                                int[] pc={solved[2][0],solved[2][1]};
-                                float abc = math.edge(pa,pb,pc);
-                                if(abc>0){
-                                    int[] point = {cc,rc};
-                                    float abp = math.edge(pa,pb,point);
-                                    float bcp = math.edge(pb,pc,point);
-                                    float cap = math.edge(pc,pa,point);
-                                    //Calculate the wieghts
-                                    float wa = bcp/abc;
-                                    float wb= cap/abc;
-                                    float wc = abp/abc;
+                            //for each pixel
+                            for ( int rc = miny; rc < maxy; rc++ ) {
+                                for ( int cc = minx; cc < maxx; cc++ ) {
+                                    //Find Sined stuff. https://jtsorlinis.github.io/rendering-tutorial/ Really helped
+                                    int[] pa={solved[0][0],solved[0][1]};
+                                    int[] pb={solved[1][0],solved[1][1]};
+                                    int[] pc={solved[2][0],solved[2][1]};
+                                    float abc = math.edge(pa,pb,pc);
+                                    if(abc>0){
+                                        int[] point = {cc,rc};
+                                        float abp = math.edge(pa,pb,point);
+                                        float bcp = math.edge(pb,pc,point);
+                                        float cap = math.edge(pc,pa,point);
+                                        //Calculate the wieghts
+                                        float wa = bcp/abc;
+                                        float wb= cap/abc;
+                                        float wc = abp/abc;
 
-                                    //weird distance function
-                                    //float disty= math.pointdistance(poly, wa, wb, wc,20,0,0,0);
+                                        //weird distance function
+                                        //float disty= math.pointdistance(poly, wa, wb, wc,20,0,0,0);
 
-                                    //checks if point is in triangle
-                                    if(abp>=0 && bcp>=0 && cap>=0){
+                                        //checks if point is in triangle
+                                        if(abp>=0 && bcp>=0 && cap>=0){
 
-                                        if(tridist < bufferlight[cc][rc]){
-                                            //this happens if pixel is in triangle and its depth is less than others
-                                            bufferlight[cc][rc] = tridist;
+                                            if(tridist < bufferlight[cc][rc]){
+                                                //this happens if pixel is in triangle and its depth is less than others
+                                                bufferlight[cc][rc] = tridist;
+                                            }
                                         }
                                     }
                                 }
                             }
+
+
                         }
-
-
                     }
                 }
             }
             //Most stuff is the same as Lighting pass. This is the pass for actual rendering
+
+            long stesttime3=0;
             for (Objtools object : objlist) {
                 for (int i=0;i<object.rface.length;i++){
 
@@ -342,11 +384,20 @@ public class Main extends JComponent{
 
                     float[][] poly={g,hh,f};
                     //float[][] polyr = math.rotateobj(poly,rot,0);
+                    
+
+
+                    
+
                     int[][] solved = math.solvePoly(poly,80,x4,y4,z4,0);
+
+                    
+
 
                     //Calculates The normal of the polygon and then finds the dot product in relation to the light direction
                     float[] norm= math.makenormal(poly);
                     float doted = Math.max(0,math.dotprod(norm,lightv));
+
 
                     //do color change based on normal
                     float red,green,blue;
@@ -369,7 +420,8 @@ public class Main extends JComponent{
                         miny=math.clamp(miny,0,(h-1));
                         maxx=math.clamp(maxx,0,(w-1));
                         maxy=math.clamp(maxy,0,(h-1));
-
+                        
+                        long stesttime1= System.nanoTime();
                         for ( int rc = miny; rc < maxy; rc++ ) {
                             for ( int cc = minx; cc < maxx; cc++ ) {
                                 int[] pa={solved[0][0],solved[0][1]};
@@ -377,7 +429,7 @@ public class Main extends JComponent{
                                 int[] pc={solved[2][0],solved[2][1]};
                                 float abc = math.edge(pa,pb,pc);
 
-                                if(abc>0){
+                                if(abc>0&& tridist < buffer[cc][rc]){
                                     int[] point = {cc,rc};
 
                                     float abp = math.edge(pa,pb,point);
@@ -390,20 +442,18 @@ public class Main extends JComponent{
 
                                     //float disty= math.pointdistance(poly, wa, wb, wc,20,x4,y4,z4);
                                     if(abp>=0 && bcp>=0 && cap>=0){
+                                        buffer[cc][rc] = tridist;
+                                        //finds what point the pixel is loking at and then transforms that to the lights view
 
-                                        if(tridist < buffer[cc][rc]){ 
-    
-                                            buffer[cc][rc] = tridist;
-                                            //finds what point the pixel is loking at and then transforms that to the lights view
+                                        if(doshadows){
                                             float[] pointontri=math.pointfinder(poly,wa,wb,wc);
-                                            int[] light = math.solvepointLight(pointontri,80,0,0);
+                                            int[] light = math.solvepointLight(pointontri,shadowscale,reto,0);
                                             /*
                                             int fhgh = math.clamp(light[0],0,599);
                                             int fhgf = math.clamp(light[1],0,599);
-                                            */
+                                             */
                                             int Lightx =light[0];
                                             int Lighty =light[1];
-
 
                                             //if is on screen and within Light depth buffer size
                                             if((Lightx<600&&Lightx>=0)&&(Lighty<600&&Lighty>=0)&&(math.dorender ==1)){
@@ -413,6 +463,7 @@ public class Main extends JComponent{
                                                 if(lightdist<=tridist){
                                                     //shadow
                                                     comp.img2.setRGB(cc, rc, Color.red.getRGB() );
+                                                    //comp.img2.setRGB(cc, rc, Color.black.getRGB() );
                                                 }else{
                                                     //normal
                                                     comp.img2.setRGB(cc, rc, tricolor.getRGB() );
@@ -421,16 +472,18 @@ public class Main extends JComponent{
                                                 //index out of bounds or dorender says dont render
                                                 comp.img2.setRGB(cc, rc, Color.green.getRGB() );
                                             }
-
-                                        } 
+                                        }else{
+                                            comp.img2.setRGB(cc, rc, tricolor.getRGB() );
+                                        }
                                     }
 
                                 }
 
                             }
                         }
+                        long stesttime2 = System.nanoTime();
+                        stesttime3 += stesttime2-stesttime1;
                     }
-
                 }
 
 
@@ -457,6 +510,7 @@ public class Main extends JComponent{
                 y4=y4+movespeed;
             }
 
+            //System.out.println("total solved time" + stesttime3);
             //change displayed image to the new renderd image and display
             comp.img=comp.img2;
             comp.repaint();
@@ -483,9 +537,17 @@ public class Main extends JComponent{
             //rot=rot+5;
             //obj.z=obj.z+0f;
 
+            /*
+            reto=reto-0.025f;
+            if(reto<-1){
+                reto=.5f;
+            }
+            */
+
+
             //try to sleep so that image looks good updating
             try {
-                Thread.sleep(1);
+                Thread.sleep(0);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 //quit thread
