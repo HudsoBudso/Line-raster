@@ -51,9 +51,12 @@ public class Mathing
     //solves point using perspective matrix
     public int[] solvepoint(float[] point, float scale,float x4, float y4, float z4,int r1,int r2){
         float x,y,z;
+        
         x=point[0]+x4;
         y=point[1]-3+y4;
         z=point[2]+8+z4;
+        
+        
         //prob transform point here
         float[] pointmat = {x,y,z,1};
         /*

@@ -188,6 +188,9 @@ public class Main extends JComponent{
         float x4 = 0;
         float y4 = 0;
         float z4 = 0;
+        float x4c = 0;
+        float y4c = 0;
+        float z4c = 0;
         int frame = 0;
         double frameav=0;
 
@@ -228,6 +231,7 @@ public class Main extends JComponent{
         float rotatex =0;
         float rotatey =0;
         //While true to make it a "video"
+        int krill=0;
         while (true){
             //Starts rendering time
             
@@ -507,45 +511,40 @@ public class Main extends JComponent{
 
             //Add to movements if a key is pressed
             float movespeed=.4f;
-            float[] xm={1,0,0};
-            float[] ym={0,1,0};
-            float[] zm={0,0,1};
-            float[] xmm=math.rotatepoint(xm,(int)rotatex,(int)rotatey,0);
-            float[] ymm=math.rotatepoint(ym,(int)rotatex,(int)rotatey,0);
-            float[] zmm=math.rotatepoint(zm,(int)rotatex,(int)rotatey,0);
-            System.out.println(rotatex);
-            
+            x4c=0;
+            y4c=0;
+            z4c=0;
             if (Main.isWPressed()) {
-                x4=x4-zmm[0];
-                y4=y4-zmm[1];
-                z4=z4-zmm[2];
+                //z4=z4-movespeed;
+                z4c=-movespeed;
             }
             if (Main.isSPressed()) {
-                x4=x4+zmm[0];
-                y4=y4+zmm[1];
-                z4=z4+zmm[2];
+                //z4=z4+movespeed;
+                z4c=+movespeed;
             }
             if (Main.isAPressed()) {
-                x4=x4+xmm[0];
-                y4=y4+xmm[1];
-                z4=z4+xmm[2];
+                //x4=x4+movespeed;
+                x4c=movespeed;
             }
             if (Main.isDPressed()) {
-                x4=x4-xmm[0];
-                y4=y4-xmm[1];
-                z4=z4-xmm[2];
+                //x4=x4-movespeed;
+                x4c=-movespeed;
             }
             if (Main.isSpPressed()) {
-                x4=x4-ymm[0];
-                y4=y4-ymm[1];
-                z4=z4-ymm[2];
+                //y4=y4-movespeed;
+                y4c=-movespeed;
             }
             if (Main.iscPressed()) {
-                x4=x4+ymm[0];
-                y4=y4+ymm[1];
-                z4=z4+ymm[2];
+                //y4=y4+movespeed;
+                y4c=movespeed;
             }
+            float[]pleasehelp={x4c,y4c,z4c};
+            float[] ineedmorehelp=math.rotatepoint(pleasehelp,(int)rotatex,(int)rotatey,0);
+            x4+=ineedmorehelp[0];
+            y4+=ineedmorehelp[1];
+            z4+=ineedmorehelp[2];
 
+            
             //change displayed image to the new renderd image and display
             comp.img=comp.img2;
             comp.repaint();
