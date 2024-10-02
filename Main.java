@@ -538,6 +538,7 @@ public class Main extends JComponent{
                 //y4=y4+movespeed;
                 y4c=movespeed;
             }
+            //need to flip stuff based on oriantation
             float[]pleasehelp={x4c,y4c,z4c};
             float[] ineedmorehelp=math.rotatepoint(pleasehelp,(int)rotatex,(int)rotatey,0);
             x4+=ineedmorehelp[0];
