@@ -1,3 +1,4 @@
+
 public class Mathing
 {
     //basic things declared
@@ -24,9 +25,9 @@ public class Mathing
     }    
 
     //calculates signed edge thing from rasterization tutorial
-     public float edge(int[] a, int[] b,int[] c)
+    public int edge(int[] a, int[] b,int[] c)
     {   
-        float hi=((b[0]-a[0])*(c[1]-a[1]))-((b[1]-a[1])*(c[0]-a[0]));
+       int hi=((b[0]-a[0])*(c[1]-a[1]))-((b[1]-a[1])*(c[0]-a[0]));
        return hi;
     }
 
@@ -48,19 +49,25 @@ public class Mathing
     }
 
     //solves point using perspective matrix
-    public int[] solvepoint(float[] point, float scale,float x4, float y4, float z4,float r1){
+    public int[] solvepoint(float[] point, float scale,float x4, float y4, float z4,int r1,int r2){
         float x,y,z;
+        //float[] point1 =rotatepoint(point,r1,r2,0);
+        //float[] point1 =trotatepoint(point,r1,r2,0,x4,y4,z4);
         x=point[0]+x4;
         y=point[1]-3+y4;
         z=point[2]+8+z4;
-        //prob transform point here
 
+        //x=point1[0];
+        //y=point1[1];
+        //z=point1[2];
+
+        //prob transform point here
         float[] pointmat = {x,y,z,1};
         /*
         float[][] rotx;
         float[][] roty={{1,0,0,0},{0,Math.cos(),-Math.sin(),0},{0,Math.sin(),Math.cos(),0},{0,0,0,1}};
         */
-
+        pointmat=rotatepoint(pointmat,r1,r2,0);
         float[] inter = matmult(persmat,pointmat);
 
 
@@ -97,47 +104,65 @@ public class Mathing
 
 
     //rotate a obj
-    public float[][] rotateobj(float[][] poly, int rot, int axis){
-        float[] a = rotatepoint(poly[0], rot, axis);   
-        float[] b = rotatepoint(poly[1], rot, axis);   
-        float[] c = rotatepoint(poly[2], rot, axis);   
+    public float[][] rotateobj(float[][] poly, int rot,int rot1, int axis){
+        float[] a = rotatepoint(poly[0], rot,rot1, axis);   
+        float[] b = rotatepoint(poly[1], rot,rot1, axis);   
+        float[] c = rotatepoint(poly[2], rot,rot1, axis);   
         float[][] d = {a,b,c};
         return d;
 
     }
     //rotate a point
-    public float[] rotatepoint (float[] poly, int rot, int axis){
+    public float[] rotatepoint (float[] poly, int rot1,int rot, int axis){
 
         float x= poly[0];
-        float y= poly[1];
-        float z= poly[2];
+        float y= poly[1]-3;
+        float z= poly[2]+8;
+        if(3<poly.length){
+            float w= poly[3];
 
-        float[] pointmat = {x,y,z,0};
-        float[][] rotx={{1,0,0,0},{0,(float)Math.cos(Math.toRadians(rot)),-(float)Math.sin(Math.toRadians(rot)),0},{0,(float)Math.sin(Math.toRadians(rot)),(float)Math.cos(Math.toRadians(rot)),0},{0,0,0,0}};
+            float[] pointmat = {x,y,z,w};
+            
 
-        float[] inter = matmult(rotx,pointmat);
-        x=inter[0];
-        y=inter[1];
-        z=inter[2];
+            float[][] rotbig={{(float)Math.cos(Math.toRadians(rot1)),0,(float)Math.sin(Math.toRadians(rot1)),0},{(float)Math.sin(Math.toRadians(rot1))*(float)Math.sin(Math.toRadians(rot)),(float)Math.cos(Math.toRadians(rot)),(float)Math.sin(Math.toRadians(rot))*-(float)Math.cos(Math.toRadians(rot1)),0},{-(float)Math.cos(Math.toRadians(rot))*(float)Math.sin(Math.toRadians(rot1)),(float)Math.sin(Math.toRadians(rot)),(float)Math.cos(Math.toRadians(rot1))*(float)Math.cos(Math.toRadians(rot)),0},{0,0,0,0}};
+
+            float[] inter = matmult(rotbig,pointmat);
+          
+            x=inter[0];
+            y=inter[1];
+            z=inter[2];
+            float[] ad= {x,y,z,1};
+            return ad;
+        }else{
+            float[] pointmat = {x,y,z,0};
+            float[][] rotbig={{(float)Math.cos(Math.toRadians(rot1)),0,(float)Math.sin(Math.toRadians(rot1)),0},{(float)Math.sin(Math.toRadians(rot1))*(float)Math.sin(Math.toRadians(rot)),(float)Math.cos(Math.toRadians(rot)),(float)Math.sin(Math.toRadians(rot))*-(float)Math.cos(Math.toRadians(rot1)),0},{-(float)Math.cos(Math.toRadians(rot))*(float)Math.sin(Math.toRadians(rot1)),(float)Math.sin(Math.toRadians(rot)),(float)Math.cos(Math.toRadians(rot1))*(float)Math.cos(Math.toRadians(rot)),0},{0,0,0,0}};
+
+            float[] inter = matmult(rotbig,pointmat);
+
+            x=inter[0];
+            y=inter[1];
+            z=inter[2];
             float[] ad= {x,y,z};
             return ad;
-
+        }
     }
 
 
+
+
     //solve a polygon using perspective
-    public int[][] solvePoly(float[][] poly, float scale, float x4, float y4, float z4,float r1){
-        int[] a = solvepoint(poly[0], scale,x4,y4,z4,r1);
+    public int[][] solvePoly(float[][] poly, float scale, float x4, float y4, float z4,int r1,int r2){
+        int[] a = solvepoint(poly[0], scale,x4,y4,z4,r1,r2);
         if(dorender==0){
             int[][] e = {{0},{0},{0}};
             return e;
         }
-        int[] b = solvepoint(poly[1], scale,x4,y4,z4,r1);   
+        int[] b = solvepoint(poly[1], scale,x4,y4,z4,r1,r2);   
         if(dorender==0){
             int[][] e = {{0},{0},{0}};
             return e;
         }
-        int[] c = solvepoint(poly[2], scale,x4,y4,z4,r1);
+        int[] c = solvepoint(poly[2], scale,x4,y4,z4,r1,r2);
         if(dorender==0){
             int[][] e = {{0},{0},{0}};
             return e;
@@ -147,7 +172,7 @@ public class Mathing
     }
 
     //solve polygon for light using orthographic
-    public int[][] solvePolyLight(float[][] poly, float scale,float r1,float r2){
+    public int[][] solvePolyLight(float[][] poly, float scale,int r1,int r2){
         int[] a = solvepointLight(poly[0], scale,r1,r2);
         if(dorender==0){
             int[][] e = {{0},{0},{0}};
@@ -167,7 +192,7 @@ public class Mathing
         return e;
     }
     //solve point using ortho matrix
-    public int[] solvepointLight(float[] point, float scale,float r1,float r2){
+    public int[] solvepointLight(float[] point, float scale,int r1,int r2){
         float x,y,z;
         x=point[0];
         y=point[1]-3;
@@ -180,12 +205,8 @@ public class Mathing
         //float[][] orthomat = new float[][] {{1/2,0,0,0},{0,1,0,0},{0,0,0,0},{0,0,0,1}};
 
         //float[][] rotx;
-
-        float[][] roty={{1,0,0,0},{0,(float)Math.cos(r1),(float)-Math.sin(r1),0},{0,(float)Math.sin(r1),(float)Math.cos(r1),0},{0,0,0,1}};
-
-        float[] inter2 = matmult(roty,pointmat);
-        float[] inter = matmult(orthomat,inter2);
-
+        
+        float[] inter = matmult(orthomat,pointmat);
         if(inter[3]<=0){
             z=0;
             x=0;
@@ -210,25 +231,25 @@ public class Mathing
     }
 
     //calculates distance to poly
-    public float distance(float[][] poly,float scale,float x4, float y4, float z4,float r1){
-        float a = distance1(poly[0],scale,x4,y4,z4,r1);
-        float b = distance1(poly[1],scale,x4,y4,z4,r1);
-        float c = distance1(poly[2],scale,x4,y4,z4,r1);
+    public float distance(float[][] poly,float scale,float x4, float y4, float z4,int r1,int r2){
+        float a = distance1(poly[0],scale,x4,y4,z4,r1,r2);
+        float b = distance1(poly[1],scale,x4,y4,z4,r1,r2);
+        float c = distance1(poly[2],scale,x4,y4,z4,r1,r2);
         float all=(a+b+c)/3;
         return all;
     }
     //calculates distance for a point
-    public float distance1(float[] point, float scale,float x4, float y4, float z4,float r1){
+    public float distance1(float[] point, float scale,float x4, float y4, float z4,int r1,int r2){
         float x,y,z;
         x=point[0]+x4;
         y=point[1]-3+y4;
         z=point[2]+8+z4;
-        /*
-        float[] pointmat = {x,y,z,1};
-        float[][] rotx;
-        float[][] roty={{1,0,0,0},{0,Math.cos(),-Math.sin(),0},{0,Math.sin(),Math.cos(),0},{0,0,0,1}};
-        */
 
+        float[] pointmat = {x,y,z,1};
+        pointmat=rotatepoint(pointmat,r1,r2,0);
+        x=pointmat[0];
+        y=pointmat[1];
+        z=pointmat[2];
         double ab = Math.sqrt(Math.pow(x,2)+Math.pow(y,2));
         double b = Math.sqrt(Math.pow(ab,2)+Math.pow(z,2));
         float z2 =(float)(b*scale);
@@ -237,7 +258,7 @@ public class Mathing
 
 
     //solves distance of a point given weights
-    public float pointdistance(float[][]poly, float w1,float w2,float w3,int s,float x4,float y4, float z4){
+    public float pointdistance(float[][]poly, float w1,float w2,float w3,int s,float x4,float y4, float z4,int r1,int r2){
          /*
         float x,y,z;
 
@@ -252,7 +273,7 @@ public class Mathing
         float l1= (float)Math.sqrt(Math.pow(poly[0][0]+x4,2) + Math.pow(poly[0][1]+y4,2) + Math.pow(poly[0][2]+z4,2));
         float l2= (float)Math.sqrt(Math.pow(poly[1][0]+x4,2) + Math.pow(poly[1][1]+y4,2) + Math.pow(poly[1][2]+z4,2));
         float l3= (float)Math.sqrt(Math.pow(poly[2][0]+x4,2) + Math.pow(poly[2][1]+y4,2) + Math.pow(poly[2][2]+z4,2));
-        float a = distance(poly,s,x4,y4,z4,0);
+        float a = distance(poly,s,x4,y4,z4,r1,r2);
         l1=l1*s;
         l2=l2*s;
         l3=l3*s;
@@ -268,8 +289,9 @@ public class Mathing
     }
 
     //calculates point using weights
-    public float[] pointfinder(float[][]poly, float w1,float w2,float w3){
+    public float[] pointfinder(float[][]poly, float w1,float w2,float w3,int r1,int r2){
         float x,y,z;
+        //poly=rotateobj(poly,r1,r2,0);
         x=((poly[0][0])*w1)+((poly[1][0])*w2)+((poly[2][0])*w3);
         y=((poly[0][1])*w1)+((poly[1][1])*w2)+((poly[2][1])*w3);
         z=((poly[0][2])*w1)+((poly[1][2])*w2)+((poly[2][2])*w3);

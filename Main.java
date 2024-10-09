@@ -4,11 +4,11 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
+import java.awt.MouseInfo;
 import java.awt.event.KeyEvent;
 import java.awt.image.*;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-
 
 
 public class Main extends JComponent{
@@ -120,13 +120,6 @@ public class Main extends JComponent{
 
 
 
-        long testtime1= System.nanoTime();
-        long testtime2 = System.nanoTime();
-        long  testtime3 = testtime2-testtime1;
-
-        
-
-
         //Sets up mathing object with All the uesfull math functions, is initialised as (Fov,Near Plane, Far plane)
         Mathing math = new Mathing(45,1,30);
 
@@ -195,6 +188,9 @@ public class Main extends JComponent{
         float x4 = 0;
         float y4 = 0;
         float z4 = 0;
+        float x4c = 0;
+        float y4c = 0;
+        float z4c = 0;
         int frame = 0;
         double frameav=0;
 
@@ -228,14 +224,20 @@ public class Main extends JComponent{
         //Sets scale of shadow map
         int shadowscale = 10;
 
-        boolean doshadows =true;
+        boolean doshadows =false;
 
 
-
+        long hello=0;
+        float rotatex =0;
+        float rotatey =0;
         //While true to make it a "video"
+        int krill=0;
         while (true){
             //Starts rendering time
-            long a = System.nanoTime();
+
+            int mousex = MouseInfo.getPointerInfo().getLocation().x;
+            int mousey = MouseInfo.getPointerInfo().getLocation().y;
+            long a = System.currentTimeMillis();
 
             float[] lightv= math.rotate(lighta,-reto,0);
             //Creates new buffers for Light and Normal rendering Passes
@@ -254,7 +256,7 @@ public class Main extends JComponent{
                 }
             }
 
-            
+
             //gets first object in the object list
             Objtools lobject= objlist[0];
             //gets the first face of said obkect
@@ -268,7 +270,7 @@ public class Main extends JComponent{
 
 
             //Solves distance diffrence, still not entirely sure why this works
-            float lwhy = math.distance1(lpoint,20,x4,y4,z4,0)-math.distance1(lpoint,20,0,0,-1.8f,0);
+            float lwhy = math.distance1(lpoint,20,x4,y4,z4,(int)rotatex,(int)rotatey)-math.distance1(lpoint,20,0,0,-1.8f,0,0);
 
 
             float[] lightloc = {x4,y4,-z4,0};
@@ -312,9 +314,9 @@ public class Main extends JComponent{
                         //float[][] polyr = math.rotateobj(poly,rot,0);
 
                         //Solves location and distance of polygon
-                        int[][] solved = math.solvePolyLight(poly,shadowscale,reto,0);
+                        int[][] solved = math.solvePolyLight(poly,shadowscale,0,0);
 
-                        float tridist = lwhy + math.distance(poly,20,0,0,0,0);
+                        float tridist = lwhy + math.distance(poly,20,0,0,0,0,0);
 
                         //do if the point is able to be renderd
                         if(math.dorender==1){
@@ -336,12 +338,12 @@ public class Main extends JComponent{
                                     int[] pa={solved[0][0],solved[0][1]};
                                     int[] pb={solved[1][0],solved[1][1]};
                                     int[] pc={solved[2][0],solved[2][1]};
-                                    float abc = math.edge(pa,pb,pc);
+                                    int abc = math.edge(pa,pb,pc);
                                     if(abc>0){
                                         int[] point = {cc,rc};
-                                        float abp = math.edge(pa,pb,point);
-                                        float bcp = math.edge(pb,pc,point);
-                                        float cap = math.edge(pc,pa,point);
+                                        int abp = math.edge(pa,pb,point);
+                                        int bcp = math.edge(pb,pc,point);
+                                        int cap = math.edge(pc,pa,point);
                                         //Calculate the wieghts
                                         float wa = bcp/abc;
                                         float wb= cap/abc;
@@ -369,7 +371,7 @@ public class Main extends JComponent{
             }
             //Most stuff is the same as Lighting pass. This is the pass for actual rendering
 
-            long stesttime3=0;
+            hello=0;
             for (Objtools object : objlist) {
                 for (int i=0;i<object.rface.length;i++){
 
@@ -384,14 +386,14 @@ public class Main extends JComponent{
 
                     float[][] poly={g,hh,f};
                     //float[][] polyr = math.rotateobj(poly,rot,0);
-                    
 
 
-                    
 
-                    int[][] solved = math.solvePoly(poly,80,x4,y4,z4,0);
 
-                    
+
+                    int[][] solved = math.solvePoly(poly,80,x4,y4,z4,(int)rotatex,(int)rotatey);
+
+
 
 
                     //Calculates The normal of the polygon and then finds the dot product in relation to the light direction
@@ -407,7 +409,7 @@ public class Main extends JComponent{
                     Color tricolor = new Color((int)red,(int)green,(int)blue);
 
                     //calculates distance
-                    float tridist = math.distance(poly, 20,x4,y4,z4,0);
+                    float tridist = math.distance(poly, 20,x4,y4,z4,(int)rotatex,(int)rotatey);
 
                     if(math.dorender==1){
 
@@ -420,25 +422,25 @@ public class Main extends JComponent{
                         miny=math.clamp(miny,0,(h-1));
                         maxx=math.clamp(maxx,0,(w-1));
                         maxy=math.clamp(maxy,0,(h-1));
-                        
-                        long stesttime1= System.nanoTime();
+
+
                         for ( int rc = miny; rc < maxy; rc++ ) {
                             for ( int cc = minx; cc < maxx; cc++ ) {
                                 int[] pa={solved[0][0],solved[0][1]};
                                 int[] pb={solved[1][0],solved[1][1]};
                                 int[] pc={solved[2][0],solved[2][1]};
-                                float abc = math.edge(pa,pb,pc);
+                                int abc = math.edge(pa,pb,pc);
 
                                 if(abc>0&& tridist < buffer[cc][rc]){
                                     int[] point = {cc,rc};
 
-                                    float abp = math.edge(pa,pb,point);
-                                    float bcp = math.edge(pb,pc,point);
-                                    float cap = math.edge(pc,pa,point);
+                                    int abp = math.edge(pa,pb,point);
+                                    int bcp = math.edge(pb,pc,point);
+                                    int cap = math.edge(pc,pa,point);
 
-                                    float wa = bcp/abc;
-                                    float wb= cap/abc;
-                                    float wc = abp/abc;
+                                    float wa = (float)bcp/abc;
+                                    float wb= (float)cap/abc;
+                                    float wc = (float)abp/abc;
 
                                     //float disty= math.pointdistance(poly, wa, wb, wc,20,x4,y4,z4);
                                     if(abp>=0 && bcp>=0 && cap>=0){
@@ -446,8 +448,10 @@ public class Main extends JComponent{
                                         //finds what point the pixel is loking at and then transforms that to the lights view
 
                                         if(doshadows){
-                                            float[] pointontri=math.pointfinder(poly,wa,wb,wc);
-                                            int[] light = math.solvepointLight(pointontri,shadowscale,reto,0);
+
+                                            float[] pointontri=math.pointfinder(poly,wa,wb,wc,(int)rotatex,(int)rotatey);
+
+                                            int[] light = math.solvepointLight(pointontri,shadowscale,(int)rotatex,(int)rotatey);
                                             /*
                                             int fhgh = math.clamp(light[0],0,599);
                                             int fhgf = math.clamp(light[1],0,599);
@@ -455,7 +459,9 @@ public class Main extends JComponent{
                                             int Lightx =light[0];
                                             int Lighty =light[1];
 
+
                                             //if is on screen and within Light depth buffer size
+                                            long helloa=System.currentTimeMillis();
                                             if((Lightx<600&&Lightx>=0)&&(Lighty<600&&Lighty>=0)&&(math.dorender ==1)){
                                                 //find distance from lights view
                                                 float lightdist = bufferlight[Lightx][Lighty];
@@ -471,8 +477,14 @@ public class Main extends JComponent{
                                             }else{
                                                 //index out of bounds or dorender says dont render
                                                 comp.img2.setRGB(cc, rc, Color.green.getRGB() );
+                                                //comp.img2.setRGB(cc, rc, tricolor.getRGB() );
                                             }
+                                            long hellob=System.currentTimeMillis();
+                                            hello+=(hellob-helloa);
                                         }else{
+                                            //this is point weight coloring
+                                            //Color coloring2 = new Color((int)(254*wa),(int)(254*wb),(int)(254*wc));
+                                            //comp.img2.setRGB(cc, rc, coloring2.getRGB() );
                                             comp.img2.setRGB(cc, rc, tricolor.getRGB() );
                                         }
                                     }
@@ -481,36 +493,72 @@ public class Main extends JComponent{
 
                             }
                         }
-                        long stesttime2 = System.nanoTime();
-                        stesttime3 += stesttime2-stesttime1;
+
                     }
                 }
 
 
             }
 
+            //Get change in mouse
+            int changeinx=mousex-MouseInfo.getPointerInfo().getLocation().x;
+            int changeiny=mousey-MouseInfo.getPointerInfo().getLocation().y;
+            rotatex=rotatex+(float)(changeinx*.5);
+            rotatey=rotatey+(float)(changeiny*.5);
+
+            //reset so it is within 360 degrees
+            if(rotatex>=360){rotatex=rotatex-360;}
+            if(rotatex<=-360){rotatex=rotatex+360;}
+
+            if(rotatey>=90){rotatey=90;}
+            if(rotatey<=-90){rotatey=-90;}
+
+
+            //System.out.println("X: "+rotatex);
+            //System.out.println("Y: "+rotatey);
+
             //Add to movements if a key is pressed
             float movespeed=.4f;
+            x4c=0;
+            y4c=0;
+            z4c=0;
             if (Main.isWPressed()) {
-                z4=z4-movespeed;
+                //z4=z4-movespeed;
+                z4c=-movespeed;
             }
             if (Main.isSPressed()) {
-                z4=z4+movespeed;
+                //z4=z4+movespeed;
+                z4c=+movespeed;
             }
             if (Main.isAPressed()) {
-                x4=x4+movespeed;
+                //x4=x4+movespeed;
+                x4c=movespeed;
             }
             if (Main.isDPressed()) {
-                x4=x4-movespeed;
+                //x4=x4-movespeed;
+               x4c=-movespeed;
             }
             if (Main.isSpPressed()) {
-                y4=y4-movespeed;
+                //y4=y4-movespeed;
+                y4c=-movespeed;
             }
             if (Main.iscPressed()) {
-                y4=y4+movespeed;
+                //y4=y4+movespeed;
+                y4c=movespeed;
             }
+            //need to flip stuff based on oriantation
+            float[]pleasehelp={x4c,y4c,z4c,0};
+            int rot1 = -(int)rotatex;
+            int rot2 = -(int)rotatey;
+            float[][] rotbig={{(float)Math.cos(Math.toRadians(rot1)),0,(float)Math.sin(Math.toRadians(rot1)),0},{(float)Math.sin(Math.toRadians(rot1))*(float)Math.sin(Math.toRadians(rot2)),(float)Math.cos(Math.toRadians(rot2)),(float)Math.sin(Math.toRadians(rot2))*-(float)Math.cos(Math.toRadians(rot1)),0},{-(float)Math.cos(Math.toRadians(rot2))*(float)Math.sin(Math.toRadians(rot1)),(float)Math.sin(Math.toRadians(rot2)),(float)Math.cos(Math.toRadians(rot1))*(float)Math.cos(Math.toRadians(rot2)),0},{0,0,0,0}};
 
-            //System.out.println("total solved time" + stesttime3);
+            
+            float[] ineedmorehelp=math.matmult(rotbig,pleasehelp);
+            x4=x4+ineedmorehelp[0];
+            y4=y4+ineedmorehelp[1];
+            z4=z4+ineedmorehelp[2];
+
+
             //change displayed image to the new renderd image and display
             comp.img=comp.img2;
             comp.repaint();
@@ -519,9 +567,11 @@ public class Main extends JComponent{
 
 
             //finish time calculations and calculate FPS
-            long b = System.nanoTime();
+            long b = System.currentTimeMillis();
             long elapsedTime = b-a;
-            double seconds = (double)elapsedTime / 1_000_000_000.0; 
+            double seconds = (double)elapsedTime / 1_000.0; 
+            //System.out.println(seconds);
+            //System.out.println(hello);
             //System.out.println(1/seconds);
 
             if(frame<60){
@@ -532,6 +582,10 @@ public class Main extends JComponent{
                 System.out.println(1/(frameav/60));
                 frameav=0;
             }
+
+
+
+
 
             //animation stuff
             //rot=rot+5;
