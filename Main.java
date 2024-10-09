@@ -120,6 +120,8 @@ public class Main extends JComponent{
 
 
 
+        
+
         //Sets up mathing object with All the uesfull math functions, is initialised as (Fov,Near Plane, Far plane)
         Mathing math = new Mathing(45,1,30);
 
@@ -412,7 +414,7 @@ public class Main extends JComponent{
                     float tridist = math.distance(poly, 20,x4,y4,z4,(int)rotatex,(int)rotatey);
 
                     if(math.dorender==1){
-
+                        
                         int hi[][] = math.bb(solved,0,1,1);
                         int minx=hi[0][0];
                         int miny=hi[1][0];
